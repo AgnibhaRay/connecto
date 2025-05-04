@@ -97,6 +97,8 @@ export default function RegisterForm() {
         followers: [],
         createdAt: now, // Create actual Date object
         updatedAt: now, // Add updatedAt field
+        isVerified: false,
+        isAdmin: false,
       };
 
       await setDoc(doc(db, 'users', userCredential.user.uid), userData);
@@ -218,7 +220,7 @@ export default function RegisterForm() {
           type="text"
           required
           className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-          placeholder="House (e.g., Jawaharlal/Vidyasagar/Tagore/Sarojini)"
+          placeholder="College Name"
           value={formData.house}
           onChange={(e) => setFormData({ ...formData, house: e.target.value })}
         />

@@ -11,6 +11,8 @@ import FollowButton from '@/components/profile/FollowButton';
 import { Post, UserProfile } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import VerificationBadge from '@/components/shared/VerificationBadge';
+import VerificationControls from '@/components/admin/VerificationControls';
 
 export default function ProfilePage() {
   const [user] = useAuthState(auth);
@@ -145,10 +147,18 @@ export default function ProfilePage() {
                 className="h-24 w-24 rounded-full border-4 border-gray-100 mx-auto sm:mx-0"
               />
               <div className="text-center sm:text-left">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                  {profileUser.displayName || 'Anonymous User'}
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                  {profileUser.displayName}
+                  {profileUser.isVerified && <VerificationBadge />}
                 </h1>
-                <p className="text-base sm:text-lg text-gray-600 mt-1">@{profileUser.username}</p>
+                <p className="text-base sm:text-lg text-gray-600 mt-1 flex items-center gap-2">
+                  @{profileUser.username}
+                  {profileUser.isAdmin && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                      Admin
+                    </span>
+                  )}
+                </p>
                 {!isOwnProfile && (
                   <div className="mt-2">
                     <FollowButton
@@ -160,14 +170,18 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
-            {isOwnProfile && (
-              <Link
-                href="/profile/edit"
-                className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Edit Profile
-              </Link>
-            )}
+            <div className="flex flex-col gap-2">
+              {isOwnProfile ? (
+                <Link
+                  href="/profile/edit"
+                  className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Edit Profile
+                </Link>
+              ) : user?.uid && (
+                <VerificationControls targetUser={profileUser} />
+              )}
+            </div>
           </div>
 
           <div className="flex space-x-6 text-center border-t border-gray-200 pt-6">

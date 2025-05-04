@@ -9,7 +9,8 @@ import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import Navigation from '@/components/shared/Navigation';
 import PostActions from '@/components/feed/PostActions';
-import type { Post } from '@/types';
+import VerificationBadge from '@/components/shared/VerificationBadge';
+import type { Post, UserProfile } from '@/types';
 
 interface FirestoreTimestamp {
   toDate: () => Date;
@@ -62,6 +63,8 @@ async function getPost(id: string) {
 export default function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [post, setPost] = useState<Post | null>(null);
+  const [authorVerified, setAuthorVerified] = useState(false);
+  const [commentVerifications, setCommentVerifications] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,24 +72,68 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
     async function loadPost() {
       const postData = await getPost(resolvedParams.id);
       setPost(postData);
+      
+      if (postData) {
+        // Fetch author verification status
+        const authorSnap = await getDoc(doc(db, 'users', postData.authorId));
+        if (authorSnap.exists()) {
+          const authorData = authorSnap.data() as UserProfile;
+          setAuthorVerified(authorData.isVerified || false);
+        }
+
+        // Fetch verification status for all commenters
+        if (postData.comments) {
+          const verificationStatus: Record<string, boolean> = {};
+          await Promise.all(
+            postData.comments.map(async (comment) => {
+              const commenterSnap = await getDoc(doc(db, 'users', comment.authorId));
+              if (commenterSnap.exists()) {
+                const commenterData = commenterSnap.data() as UserProfile;
+                verificationStatus[comment.authorId] = commenterData.isVerified || false;
+              }
+            })
+          );
+          setCommentVerifications(verificationStatus);
+        }
+      }
+      
       setLoading(false);
     }
     loadPost();
 
     // Set up real-time listener
     const postRef = doc(db, 'posts', resolvedParams.id);
-    const unsubscribe = onSnapshot(postRef, (doc) => {
-      if (doc.exists()) {
-        setPost({
-          id: doc.id,
-          ...doc.data()
-        } as Post);
+    const unsubscribe = onSnapshot(postRef, async (snapshot) => {
+      if (snapshot.exists()) {
+        const postData = { id: snapshot.id, ...snapshot.data() } as Post;
+        setPost(postData);
+        
+        // Update verification status when post updates
+        const authorSnap = await getDoc(doc(db, 'users', postData.authorId));
+        if (authorSnap.exists()) {
+          const authorData = authorSnap.data() as UserProfile;
+          setAuthorVerified(authorData.isVerified || false);
+        }
+
+        // Update verification status for all commenters
+        if (postData.comments) {
+          const verificationStatus: Record<string, boolean> = {};
+          await Promise.all(
+            postData.comments.map(async (comment) => {
+              const commenterSnap = await getDoc(doc(db, 'users', comment.authorId));
+              if (commenterSnap.exists()) {
+                const commenterData = commenterSnap.data() as UserProfile;
+                verificationStatus[comment.authorId] = commenterData.isVerified || false;
+              }
+            })
+          );
+          setCommentVerifications(verificationStatus);
+        }
       } else {
         setPost(null);
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [resolvedParams.id]);
 
@@ -138,7 +185,10 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
                 />
               </div>
               <div className="ml-4">
-                <h2 className="text-xl font-semibold text-gray-900">{post.authorName}</h2>
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  {post.authorName}
+                  {authorVerified && <VerificationBadge />}
+                </h2>
                 <p className="text-sm text-gray-500">
                   {formatDistanceToNow(convertTimestampToDate(post.createdAt), { addSuffix: true })}
                 </p>
@@ -181,7 +231,10 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
                   </div>
                   <div className="flex-1">
                     <div className="bg-white rounded-lg p-4 shadow-sm">
-                      <p className="font-medium text-gray-900">{comment.authorName}</p>
+                      <div className="flex items-center gap-1 mb-1">
+                        <p className="font-medium text-gray-900">{comment.authorName}</p>
+                        {commentVerifications[comment.authorId] && <VerificationBadge />}
+                      </div>
                       <p className="text-gray-500">{comment.content}</p>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">

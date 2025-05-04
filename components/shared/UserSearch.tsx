@@ -108,7 +108,14 @@ export default function UserSearch() {
                 className="rounded-full mr-3"
               />
               <div>
-                <p className="font-medium text-gray-900">{user.displayName}</p>
+                <p className="font-medium text-gray-900 flex items-center gap-2">
+                  {user.displayName}
+                  {user.isAdmin && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                      Admin
+                    </span>
+                  )}
+                </p>
                 <p className="text-sm text-gray-500">@{user.username}</p>
               </div>
             </div>

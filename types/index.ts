@@ -15,6 +15,8 @@ export interface UserProfile {
   followers: string[];
   createdAt: Date;
   updatedAt: Date;
+  isVerified?: boolean;
+  isAdmin?: boolean;
 }
 
 export interface Post {

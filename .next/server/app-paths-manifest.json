@@ -1,0 +1,13 @@
+{
+  "/(admin)/admin/page": "app/(admin)/admin/page.js",
+  "/(auth)/auth/page": "app/(auth)/auth/page.js",
+  "/(main)/events/[id]/page": "app/(main)/events/[id]/page.js",
+  "/(main)/events/page": "app/(main)/events/page.js",
+  "/(main)/feed/page": "app/(main)/feed/page.js",
+  "/(main)/posts/[id]/page": "app/(main)/posts/[id]/page.js",
+  "/(main)/profile/edit/page": "app/(main)/profile/edit/page.js",
+  "/(main)/profile/page": "app/(main)/profile/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}

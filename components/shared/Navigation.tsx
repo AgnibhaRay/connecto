@@ -16,6 +16,7 @@ interface UserProfile {
   displayName?: string;
   email?: string;
   photoURL?: string;
+  isAdmin?: boolean;
 }
 
 export default function Navigation() {
@@ -75,6 +76,18 @@ export default function Navigation() {
                   >
                     Events
                   </Link>
+                  {userProfile?.isAdmin && (
+                    <Link
+                      href="/admin"
+                      className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
+                        pathname.startsWith('/admin')
+                          ? 'border-indigo-500 text-gray-900'
+                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                      }`}
+                    >
+                      Admin
+                    </Link>
+                  )}
                 </div>
               </div>
               
@@ -169,6 +182,18 @@ export default function Navigation() {
               >
                 Events
               </Link>
+              {userProfile?.isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`block border-l-4 py-2 pl-3 pr-4 text-base font-medium ${
+                    pathname.startsWith('/admin')
+                      ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                      : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
             <div className="border-t border-gray-200 pb-3 pt-4">
               <div className="flex items-center px-4">
@@ -182,8 +207,13 @@ export default function Navigation() {
                   />
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">
+                  <div className="text-base font-medium text-gray-800 flex items-center gap-2">
                     {userProfile?.displayName}
+                    {userProfile?.isAdmin && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        Admin
+                      </span>
+                    )}
                   </div>
                   <div className="text-sm font-medium text-gray-500">
                     {userProfile?.email}
