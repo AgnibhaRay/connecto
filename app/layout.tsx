@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/auth/AuthProvider";
 import { Toaster } from "react-hot-toast";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,9 +40,9 @@ export default function RootLayout({
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Quick Links</h3>
                     <ul className="space-y-2">
-                      <li><a href="/feed" className="text-base text-gray-500 hover:text-gray-900">Feed</a></li>
-                      <li><a href="/events" className="text-base text-gray-500 hover:text-gray-900">Events</a></li>
-                      <li><a href="/profile" className="text-base text-gray-500 hover:text-gray-900">Profile</a></li>
+                      <li><Link href="/feed" className="text-base text-gray-500 hover:text-gray-900">Feed</Link></li>
+                      <li><Link href="/events" className="text-base text-gray-500 hover:text-gray-900">Events</Link></li>
+                      <li><Link href="/profile" className="text-base text-gray-500 hover:text-gray-900">Profile</Link></li>
                     </ul>
                   </div>
 
@@ -58,8 +59,8 @@ export default function RootLayout({
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Legal</h3>
                     <ul className="space-y-2">
-                      <li><a href="#" className="text-base text-gray-500 hover:text-gray-900">Privacy Policy</a></li>
-                      <li><a href="#" className="text-base text-gray-500 hover:text-gray-900">Terms of Service</a></li>
+                      <li><Link href="#" className="text-base text-gray-500 hover:text-gray-900">Privacy Policy</Link></li>
+                      <li><Link href="#" className="text-base text-gray-500 hover:text-gray-900">Terms of Service</Link></li>
                     </ul>
                   </div>
                 </div>

@@ -13,6 +13,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import VerificationBadge from '@/components/shared/VerificationBadge';
 import VerificationControls from '@/components/admin/VerificationControls';
+import Image from 'next/image';
 
 export default function ProfilePage() {
   const [user] = useAuthState(auth);
@@ -141,9 +142,11 @@ export default function ProfilePage() {
         <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
-              <img
+              <Image
                 src={profileUser.photoURL || '/images/default-avatar.png'}
                 alt={profileUser.displayName || 'Profile'}
+                width={96}
+                height={96}
                 className="h-24 w-24 rounded-full border-4 border-gray-100 mx-auto sm:mx-0"
               />
               <div className="text-center sm:text-left">

@@ -22,8 +22,14 @@ export default function SignInForm() {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
       toast.success('Successfully signed in!');
       router.push('/feed');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error signing in:', error);
+        toast.error(error.message);
+      } else {
+        console.error('Unknown error signing in:', error);
+        toast.error('An error occurred while signing in');
+      }
     } finally {
       setLoading(false);
     }
