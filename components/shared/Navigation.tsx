@@ -67,6 +67,16 @@ export default function Navigation() {
                     Feed
                   </Link>
                   <Link
+                    href="/chat"
+                    className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
+                      pathname.startsWith('/chat')
+                        ? 'border-indigo-500 text-gray-900'
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`}
+                  >
+                    Messages
+                  </Link>
+                  <Link
                     href="/events"
                     className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
                       pathname.startsWith('/events')
@@ -171,6 +181,16 @@ export default function Navigation() {
                 }`}
               >
                 Feed
+              </Link>
+              <Link
+                href="/chat"
+                className={`block border-l-4 py-2 pl-3 pr-4 text-base font-medium ${
+                  pathname.startsWith('/chat')
+                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                    : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
+                }`}
+              >
+                Messages
               </Link>
               <Link
                 href="/events"

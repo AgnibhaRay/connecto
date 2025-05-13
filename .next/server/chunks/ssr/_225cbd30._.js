@@ -148,9 +148,19 @@ function UserSearch() {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "font-medium text-gray-900",
-                                        children: user.displayName
-                                    }, void 0, false, {
+                                        className: "font-medium text-gray-900 flex items-center gap-2",
+                                        children: [
+                                            user.displayName,
+                                            user.isAdmin && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800",
+                                                children: "Admin"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/shared/UserSearch.tsx",
+                                                lineNumber: 114,
+                                                columnNumber: 21
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/components/shared/UserSearch.tsx",
                                         lineNumber: 111,
                                         columnNumber: 17
@@ -163,7 +173,7 @@ function UserSearch() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/shared/UserSearch.tsx",
-                                        lineNumber: 112,
+                                        lineNumber: 119,
                                         columnNumber: 17
                                     }, this)
                                 ]
@@ -578,9 +588,19 @@ function Navigation() {
                                                 className: "ml-3",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-base font-medium text-gray-800",
-                                                        children: userProfile?.displayName
-                                                    }, void 0, false, {
+                                                        className: "text-base font-medium text-gray-800 flex items-center gap-2",
+                                                        children: [
+                                                            userProfile?.displayName,
+                                                            userProfile?.isAdmin && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800",
+                                                                children: "Admin"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/shared/Navigation.tsx",
+                                                                lineNumber: 213,
+                                                                columnNumber: 23
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
                                                         fileName: "[project]/components/shared/Navigation.tsx",
                                                         lineNumber: 210,
                                                         columnNumber: 19
@@ -590,7 +610,7 @@ function Navigation() {
                                                         children: userProfile?.email
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/shared/Navigation.tsx",
-                                                        lineNumber: 213,
+                                                        lineNumber: 218,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
@@ -614,7 +634,7 @@ function Navigation() {
                                                 children: "Your Profile"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/shared/Navigation.tsx",
-                                                lineNumber: 219,
+                                                lineNumber: 224,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -623,13 +643,13 @@ function Navigation() {
                                                 children: "Sign out"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/shared/Navigation.tsx",
-                                                lineNumber: 225,
+                                                lineNumber: 230,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/shared/Navigation.tsx",
-                                        lineNumber: 218,
+                                        lineNumber: 223,
                                         columnNumber: 15
                                     }, this)
                                 ]

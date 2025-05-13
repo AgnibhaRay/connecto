@@ -8,6 +8,7 @@ import { doc, getDoc, query, collection, where, orderBy, getDocs, onSnapshot } f
 import Navigation from '@/components/shared/Navigation';
 import PostCard from '@/components/feed/PostCard';
 import FollowButton from '@/components/profile/FollowButton';
+import StartChat from '@/components/chat/StartChat';
 import { Post, UserProfile } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -163,12 +164,13 @@ export default function ProfilePage() {
                   )}
                 </p>
                 {!isOwnProfile && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex gap-2">
                     <FollowButton
                       targetUserId={profileUser.uid}
                       initialIsFollowing={isFollowing}
                       onFollowUpdate={setIsFollowing}
                     />
+                    <StartChat targetUserId={profileUser.uid} />
                   </div>
                 )}
               </div>

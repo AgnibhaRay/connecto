@@ -66,3 +66,20 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Chat {
+  id: string;
+  participants: string[]; // Array of user IDs
+  lastMessage?: Message;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Message {
+  id: string;
+  chatId: string;
+  senderId: string;
+  content: string;
+  createdAt: Date;
+  readBy: string[]; // Array of user IDs who have read the message
+}

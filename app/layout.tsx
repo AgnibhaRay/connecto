@@ -8,8 +8,8 @@ import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TTV Social Connect",
-  description: "Connect and engage with the TTV community",
+  title: "Connecto+",
+  description: "Connect and engage with the community",
 };
 
 export default function RootLayout({

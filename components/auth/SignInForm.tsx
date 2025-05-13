@@ -13,6 +13,7 @@ export default function SignInForm() {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // <-- New state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +55,14 @@ export default function SignInForm() {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </div>
-        <div>
+        <div className="relative">
           <label htmlFor="password" className="sr-only">
             Password
           </label>
           <input
             id="password"
             name="password"
-            type="password"
+            type={showPassword ? 'text' : 'password'} // <-- Toggle type
             autoComplete="current-password"
             required
             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
@@ -69,6 +70,14 @@ export default function SignInForm() {
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-0 flex items-center px-3 text-sm text-gray-600 focus:outline-none"
+            tabIndex={-1}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
         </div>
       </div>
 
