@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/auth/AuthProvider";
 import { Toaster } from "react-hot-toast";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,6 +26,7 @@ export default function RootLayout({
             <div className="flex-grow">
               {children}
             </div>
+            <SpeedInsights />
             <footer className="bg-gray-50 border-t">
               <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
