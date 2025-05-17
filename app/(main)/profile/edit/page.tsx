@@ -10,6 +10,7 @@ import { doc, setDoc, collection, query, where, getDocs, getDoc } from 'firebase
 import Navigation from '@/components/shared/Navigation';
 import type { UserProfile } from '@/types';
 import toast from 'react-hot-toast';
+import { processImageFile, isHeicFile } from '@/lib/utils/imageUtils';
 
 export default function EditProfilePage() {
   const [user] = useAuthState(auth);
@@ -70,9 +71,27 @@ export default function EditProfilePage() {
       let photoURL = user.photoURL;
       
       if (file) {
-        const storageRef = ref(storage, `profile-photos/${user.uid}`);
-        const uploadResult = await uploadBytes(storageRef, file);
-        photoURL = await getDownloadURL(uploadResult.ref);
+        try {
+          // Process the image (convert HEIC to JPEG if needed)
+          const processedImage = await processImageFile(file);
+          
+          const storageRef = ref(storage, `profile-photos/${user.uid}`);
+          const uploadResult = await uploadBytes(storageRef, processedImage);
+          photoURL = await getDownloadURL(uploadResult.ref);
+        } catch (imageError) {
+          console.error('Image processing error:', imageError);
+          toast.error('There was an issue processing your profile photo, but we\'ll try to upload it anyway.');
+          
+          // Try to upload the original image as a fallback
+          try {
+            const storageRef = ref(storage, `profile-photos/${user.uid}`);
+            const uploadResult = await uploadBytes(storageRef, file);
+            photoURL = await getDownloadURL(uploadResult.ref);
+          } catch (uploadError) {
+            console.error('Fallback upload error:', uploadError);
+            toast.error('Unable to update profile photo. Profile will be updated with your current photo.');
+          }
+        }
       }
 
       // Update auth profile
@@ -119,10 +138,10 @@ export default function EditProfilePage() {
       <Navigation />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h1>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8 pb-4 border-b border-gray-200">Edit Profile</h1>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <label htmlFor="username" className="block text-sm font-semibold text-gray-800 mb-2">
                 Username
               </label>
               <input
@@ -134,12 +153,14 @@ export default function EditProfilePage() {
                 title="Username must be 3-20 characters long and can only contain letters, numbers, and underscores"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-3 px-4 text-gray-800 placeholder-gray-500"
+                placeholder="Enter your username"
               />
+              <p className="mt-1 text-xs text-gray-500">3-20 characters, letters, numbers, and underscores only.</p>
             </div>
 
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <label htmlFor="bio" className="block text-sm font-semibold text-gray-800 mb-2">
                 Bio
               </label>
               <textarea
@@ -148,12 +169,13 @@ export default function EditProfilePage() {
                 rows={4}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-3 px-4 text-gray-800 placeholder-gray-500"
+                placeholder="Tell others a bit about yourself..."
               />
             </div>
 
-            <div>
-              <label htmlFor="photo" className="block text-sm font-medium text-gray-700">
+            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
+              <label htmlFor="photo" className="block text-sm font-semibold text-gray-800 mb-2">
                 Profile Photo
               </label>
               <input
@@ -161,16 +183,23 @@ export default function EditProfilePage() {
                 id="photo"
                 name="photo"
                 accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  if (file && isHeicFile(file)) {
+                    toast.success('Converting HEIC image to JPEG format...');
+                  }
+                  setFile(file);
+                }}
+                className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-3 file:px-6 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 py-2 px-3"
               />
+              <p className="mt-1 text-xs text-gray-500">Supported formats: JPG, PNG, GIF, HEIC (will be converted to JPEG)</p>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-center mt-8">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300 w-full sm:w-auto"
+                className="px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300 w-full sm:w-auto shadow-sm transition-all duration-200 hover:shadow-md"
               >
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>

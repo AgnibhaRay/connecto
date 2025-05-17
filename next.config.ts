@@ -5,6 +5,17 @@ const nextConfig: NextConfig = {
     // Disable TypeScript type checking to work around params typing issue
     ignoreBuildErrors: true,
   },
+  // Add webpack configuration for handling non-web modules
+  webpack: (config) => {
+    // Add fallbacks for Node.js modules
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      stream: false,
+    };
+    return config;
+  },
   images: {
     remotePatterns: [
       {

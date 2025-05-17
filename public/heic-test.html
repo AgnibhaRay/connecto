@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEIC Conversion Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .preview {
+            max-width: 100%;
+            margin-top: 20px;
+            border: 1px solid #eee;
+            padding: 15px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        .image-box {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-box h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border: 1px dashed #ccc;
+            padding: 5px;
+            background-color: #f5f5f5;
+        }
+        .log {
+            font-family: monospace;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+        button {
+            padding: 10px 18px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #3a80d2;
+        }
+        input[type="file"] {
+            padding: 8px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .download-link {
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 12px;
+            border: 1px solid #4a90e2;
+            border-radius: 4px;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .download-link:hover {
+            background-color: #4a90e2;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>HEIC to JPEG Conversion Test</h1>
+    
+    <div class="container">
+        <h2>Test HEIC Image Conversion</h2>
+        <p>This page helps you test if the HEIC to JPEG conversion is working properly. Select a HEIC image from your device (typically from an iPhone or iPad) and click the convert button.</p>
+        
+        <input type="file" id="fileInput" accept="image/*">
+        <button id="convertBtn">Convert Image</button>
+        
+        <div class="preview">
+            <div class="image-container">
+                <div class="image-box">
+                    <h4>Original Image:</h4>
+                    <img id="originalImg" src="" alt="No image selected">
+                </div>
+                
+                <div class="image-box">
+                    <h4>Converted Image:</h4>
+                    <img id="convertedImg" src="" alt="No conversion yet">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Conversion Log</h2>
+        <p>This log shows the detailed steps of the conversion process, helpful for troubleshooting.</p>
+        <div class="log" id="logContainer"></div>
+    </div>
+
+    <div class="container">
+        <h2>About HEIC Conversion</h2>
+        <p>The HEIC (High Efficiency Image Format) is commonly used by Apple devices. This utility converts HEIC images to JPEG format, which is more widely supported across browsers and platforms.</p>
+        <p>Key features:</p>
+        <ul>
+            <li>Client-side conversion - no files are uploaded to any server</li>
+            <li>Preserves image quality with 90% JPEG quality</li>
+            <li>Works in most modern browsers</li>
+            <li>Provides detailed conversion logs for troubleshooting</li>
+        </ul>
+    </div>
+
+    <script type="module">
+        // Load heic2any from CDN
+        let heic2anyModule = null;
+        
+        async function loadHeic2Any() {
+            if (heic2anyModule) return heic2anyModule;
+            
+            try {
+                const moduleUrl = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+                console.log('Loading heic2any from CDN:', moduleUrl);
+                
+                // Dynamic import using CDN
+                const module = await import(moduleUrl);
+                heic2anyModule = module.default;
+                console.log('Successfully loaded heic2any');
+                return heic2anyModule;
+            } catch (error) {
+                console.error('Failed to load heic2any module:', error);
+                throw new Error(`Could not load HEIC conversion library: ${error.message}`);
+            }
+        }
+        
+        // Detect HEIC/HEIF images
+        function isHeicFile(file) {
+            return (
+                file.type === 'image/heic' || 
+                file.type === 'image/heif' || 
+                file.name.toLowerCase().endsWith('.heic') || 
+                file.name.toLowerCase().endsWith('.heif')
+            );
+        }
+        
+        // Convert HEIC to JPEG
+        async function convertHeicToJpeg(file) {
+            try {
+                // Skip conversion if not a HEIC file
+                if (!isHeicFile(file)) {
+                    return file;
+                }
+                
+                console.log('Starting HEIC conversion process');
+                
+                // Load heic2any
+                const heic2any = await loadHeic2Any();
+                
+                console.log('Converting HEIC image...');
+                
+                // Convert HEIC to JPEG
+                const jpegBlob = await heic2any({
+                    blob: file,
+                    toType: 'image/jpeg',
+                    quality: 0.9
+                });
+                
+                console.log('Conversion successful, creating File object');
+                
+                // Create a new File object with the converted JPEG data
+                return new File(
+                    [jpegBlob], 
+                    file.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'), 
+                    { type: 'image/jpeg' }
+                );
+            } catch (error) {
+                console.error('Error converting HEIC to JPEG:', error);
+                throw new Error(`Failed to convert HEIC image to JPEG: ${error.message || 'Unknown error'}`);
+            }
+        }
+        
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const originalImg = document.getElementById('originalImg');
+        const convertedImg = document.getElementById('convertedImg');
+        const logContainer = document.getElementById('logContainer');
+        const statusIndicator = document.createElement('div');
+        statusIndicator.className = 'status';
+        document.querySelector('.container').appendChild(statusIndicator);
+        
+        // Add browser info to the log
+        console.log(`Browser: ${navigator.userAgent}`);
+        
+        // Override console.log for display in our UI
+        const originalConsoleLog = console.log;
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg) : arg
+            ).join(' ');
+            
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `> ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        };
+        
+        // Also capture console.error
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg) : arg
+            ).join(' ');
+            
+            const logEntry = document.createElement('div');
+            logEntry.style.color = 'red';
+            logEntry.textContent = `> ERROR: ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        };
+        
+        // Show status updates
+        function updateStatus(message, isError = false) {
+            statusIndicator.textContent = message;
+            statusIndicator.style.color = isError ? 'red' : 'green';
+            statusIndicator.style.padding = '10px';
+            statusIndicator.style.marginTop = '10px';
+            statusIndicator.style.borderRadius = '4px';
+            statusIndicator.style.backgroundColor = isError ? '#ffeeee' : '#eeffee';
+        }
+        
+        // Handle file selection
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            console.log(`File selected: ${file.name} (${file.type})`);
+            console.log(`File size: ${(file.size / 1024).toFixed(2)} KB`);
+            console.log(`Is HEIC: ${isHeicFile(file)}`);
+            
+            if (isHeicFile(file)) {
+                updateStatus('HEIC image detected! Click "Convert Image" to process it.');
+            } else {
+                updateStatus('Not a HEIC image. Conversion will be skipped.');
+            }
+            
+            // Display original image if possible
+            if (file.type.startsWith('image/') || isHeicFile(file)) {
+                try {
+                    const url = URL.createObjectURL(file);
+                    originalImg.src = url;
+                    originalImg.alt = file.name;
+                } catch (error) {
+                    console.error('Error creating object URL:', error);
+                    originalImg.alt = 'Error previewing image';
+                }
+            }
+        });
+        
+        // Handle conversion button click
+        convertBtn.addEventListener('click', async function() {
+            const file = fileInput.files[0];
+            if (!file) {
+                console.log('No file selected');
+                updateStatus('Please select a file first', true);
+                return;
+            }
+            
+            // Clear previous converted image and download links
+            convertedImg.src = '';
+            convertedImg.alt = 'Converting...';
+            const existingLinks = document.querySelectorAll('.download-link');
+            existingLinks.forEach(link => link.remove());
+            
+            try {
+                updateStatus('Starting conversion...');
+                console.log('Starting conversion...');
+                const startTime = performance.now();
+                
+                const convertedFile = await convertHeicToJpeg(file);
+                
+                const endTime = performance.now();
+                const conversionTime = (endTime - startTime).toFixed(2);
+                console.log(`Conversion completed in ${conversionTime}ms`);
+                console.log(`Original: ${file.name} (${file.type})`);
+                console.log(`Converted: ${convertedFile.name} (${convertedFile.type})`);
+                console.log(`Converted size: ${(convertedFile.size / 1024).toFixed(2)} KB`);
+                
+                updateStatus(`Conversion successful! Took ${conversionTime}ms`);
+                
+                // Display converted image
+                const url = URL.createObjectURL(convertedFile);
+                convertedImg.src = url;
+                convertedImg.alt = convertedFile.name;
+                
+                // Add download link
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = convertedFile.name;
+                downloadLink.textContent = `Download converted image (${convertedFile.name})`;
+                downloadLink.style.display = 'block';
+                downloadLink.style.marginTop = '10px';
+                downloadLink.className = 'download-link';
+                document.querySelector('.preview').appendChild(downloadLink);
+                
+            } catch (error) {
+                updateStatus(`Error during conversion: ${error.message}`, true);
+                console.error(`Error during conversion:`, error);
+                convertedImg.alt = 'Conversion failed';
+            }
+        });
+        
+        console.log('HEIC Conversion Test Page Loaded');
+        console.log('Please select a HEIC image file to test the conversion');
+        updateStatus('Ready to test HEIC conversion. Select a file to begin.');
+    </script>
+</body>
+</html>

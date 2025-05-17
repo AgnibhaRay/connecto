@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Post } from '@/types';
 import Image from 'next/image';
+import { processImageFile, isHeicFile } from '@/lib/utils/imageUtils';
 
 export default function CreatePost() {
   const [user] = useAuthState(auth);
@@ -20,9 +21,14 @@ export default function CreatePost() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check if it's a HEIC file and notify the user
+      if (isHeicFile(file)) {
+        toast.success('Converting HEIC image to JPEG format...');
+      }
+      
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -41,9 +47,28 @@ export default function CreatePost() {
       let imageURL = '';
       
       if (selectedImage) {
-        const imageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${selectedImage.name}`);
-        await uploadBytes(imageRef, selectedImage);
-        imageURL = await getDownloadURL(imageRef);
+        try {
+          // Process the image (convert HEIC to JPEG if needed)
+          const processedImage = await processImageFile(selectedImage);
+          
+          // Upload the processed image
+          const imageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${processedImage.name}`);
+          await uploadBytes(imageRef, processedImage);
+          imageURL = await getDownloadURL(imageRef);
+        } catch (error) {
+          console.error('Image processing error:', error);
+          toast.error('There was an issue processing your image, but we\'ll try to upload it anyway.');
+          
+          // Try to upload the original image as a fallback
+          try {
+            const imageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${selectedImage.name}`);
+            await uploadBytes(imageRef, selectedImage);
+            imageURL = await getDownloadURL(imageRef);
+          } catch (uploadError) {
+            console.error('Fallback upload error:', uploadError);
+            toast.error('Unable to upload image. Your post will be created without the image.');
+          }
+        }
       }
 
       const postData = {

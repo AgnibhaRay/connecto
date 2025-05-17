@@ -8,6 +8,8 @@ import { db, storage } from '@/lib/firebase/config';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Image from 'next/image';
 import Navigation from '@/components/shared/Navigation';
+import toast from 'react-hot-toast';
+import { processImageFile, isHeicFile } from '@/lib/utils/imageUtils';
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -18,9 +20,14 @@ export default function CreateEventPage() {
   const [isOnline, setIsOnline] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check if it's a HEIC file and notify the user
+      if (isHeicFile(file)) {
+        toast.success('Converting HEIC image to JPEG format...');
+      }
+      
       setCoverImage(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
@@ -82,9 +89,28 @@ export default function CreateEventPage() {
     try {
       let coverImageUrl = '';
       if (coverImage) {
-        const storageRef = ref(storage, `events/${Date.now()}-${coverImage.name}`);
-        await uploadBytes(storageRef, coverImage);
-        coverImageUrl = await getDownloadURL(storageRef);
+        try {
+          // Process the image (convert HEIC to JPEG if needed)
+          const processedImage = await processImageFile(coverImage);
+          
+          // Upload the processed image
+          const storageRef = ref(storage, `events/${Date.now()}-${processedImage.name}`);
+          await uploadBytes(storageRef, processedImage);
+          coverImageUrl = await getDownloadURL(storageRef);
+        } catch (imageError) {
+          console.error('Image processing error:', imageError);
+          toast.error('There was an issue processing your image, but we\'ll try to upload it anyway.');
+          
+          // Try to upload the original image as a fallback
+          try {
+            const storageRef = ref(storage, `events/${Date.now()}-${coverImage.name}`);
+            await uploadBytes(storageRef, coverImage);
+            coverImageUrl = await getDownloadURL(storageRef);
+          } catch (uploadError) {
+            console.error('Fallback upload error:', uploadError);
+            toast.error('Unable to upload event cover image. Your event will be created without an image.');
+          }
+        }
       }
 
       const eventData = {

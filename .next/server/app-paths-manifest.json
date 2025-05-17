@@ -1,18 +1,10 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/users/[id]/route": "app/api/users/[id]/route.js",
-  "/(main)/chat/[id]/page": "app/(main)/chat/[id]/page.js",
-  "/(auth)/auth/page": "app/(auth)/auth/page.js",
-  "/(main)/events/page": "app/(main)/events/page.js",
   "/(main)/chat/page": "app/(main)/chat/page.js",
-  "/(main)/events/create/page": "app/(main)/events/create/page.js",
-  "/(main)/posts/[id]/edit/page": "app/(main)/posts/[id]/edit/page.js",
+  "/(main)/events/page": "app/(main)/events/page.js",
   "/(main)/feed/page": "app/(main)/feed/page.js",
   "/(main)/posts/[id]/page": "app/(main)/posts/[id]/page.js",
   "/(main)/profile/edit/page": "app/(main)/profile/edit/page.js",
-  "/page": "app/page.js",
-  "/(main)/events/[id]/page": "app/(main)/events/[id]/page.js",
   "/(main)/profile/page": "app/(main)/profile/page.js",
-  "/(admin)/admin/page": "app/(admin)/admin/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
 }
