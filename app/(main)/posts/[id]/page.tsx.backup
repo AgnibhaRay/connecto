@@ -215,7 +215,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
           </div>
 
           {/* Comments section */}
-          <div className="border-t border-gray-200 bg-blue-50 p-6">
+          <div className="border-t border-gray-200 bg-gray-50 p-6">
             <h3 className="text-lg font-semibold mb-4">Comments</h3>
             <div className="space-y-4">
               {post.comments?.map((comment) => (
@@ -230,7 +230,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
                     />
                   </div>
                   <div className="flex-1">
-                    <div className="bg-white rounded-lg p-4 shadow-sm hover:bg-blue-100 transition-colors">
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
                       <div className="flex items-center gap-1 mb-1">
                         <p className="font-medium text-gray-900">{comment.authorName}</p>
                         {commentVerifications[comment.authorId] && <VerificationBadge />}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '@/lib/firebase/config';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,7 +16,8 @@ import VerificationBadge from '@/components/shared/VerificationBadge';
 import VerificationControls from '@/components/admin/VerificationControls';
 import Image from 'next/image';
 
-export default function ProfilePage() {
+// Create a ProfileContent component that uses useSearchParams
+function ProfileContent() {
   const [user] = useAuthState(auth);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ export default function ProfilePage() {
   const searchParams = useSearchParams();
   const username = searchParams.get('username');
 
+// Rest of the ProfileContent component
   // Subscribe to real-time user data updates
   useEffect(() => {
     if (!user) return;
@@ -234,5 +236,35 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main profile page component with Suspense boundary
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-100">
+        <Navigation />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="animate-pulse">
+              <div className="flex items-center mb-6">
+                <div className="h-24 w-24 bg-gray-200 rounded-full"></div>
+                <div className="ml-4 space-y-2">
+                  <div className="h-6 w-40 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <ProfileContent />
+    </Suspense>
   );
 }

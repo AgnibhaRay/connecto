@@ -54,7 +54,7 @@ export default function Comments({ comments, maxDisplay }: CommentsProps) {
             />
           </div>
           <div className="flex-grow">
-            <div className="bg-gray-50 rounded-lg p-3">
+            <div className="bg-blue-50 rounded-lg p-3">
               <div className="flex items-center mb-1">
                 <span className="font-medium text-gray-900">{comment.authorName}</span>
                 {comment.isVerified && <VerificationBadge />}

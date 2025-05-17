@@ -71,7 +71,7 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Add a comment..."
-          className="w-full bg-gray-50 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+          className="w-full bg-blue-50 rounded-full px-4 py-2 text-sm text-black placeholder-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
           aria-label="Comment input"
           maxLength={1000}
           enterKeyHint="send"
@@ -88,7 +88,7 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
       <button
         type="submit"
         disabled={!comment.trim() || isSubmitting}
-        className="text-blue-500 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 hover:bg-gray-100 rounded-full active:bg-gray-200 transition-colors"
+        className="text-blue-500 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 hover:bg-blue-100 rounded-full active:bg-blue-200 transition-colors"
         aria-label={isSubmitting ? "Posting comment..." : "Post comment"}
       >
         {isSubmitting ? 'Posting...' : 'Post'}

@@ -2,12 +2,11 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { NextResponse } from 'next/server';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+// Update the API route handler with proper context typing that works with Next.js
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(request: Request, context: any) {
   try {
-    const userRef = doc(db, 'users', params.id);
+    const userRef = doc(db, 'users', context.params.id);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
