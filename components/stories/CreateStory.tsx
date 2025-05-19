@@ -197,7 +197,7 @@ export default function CreateStory() {
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 placeholder="Add a caption..."
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-100 text-gray-800 placeholder-gray-500 border-gray-300"
                 maxLength={100}
               />
               
