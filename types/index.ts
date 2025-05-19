@@ -1,3 +1,5 @@
+import { FieldValue, Timestamp } from 'firebase/firestore';
+
 export interface UserProfile {
   uid: string;
   email: string;
@@ -13,10 +15,11 @@ export interface UserProfile {
   photoURL?: string;
   following: string[];
   followers: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | FieldValue | Timestamp;
+  updatedAt: Date | FieldValue | Timestamp;
   isVerified?: boolean;
   isAdmin?: boolean;
+  isSuspended?: boolean;
 }
 
 export interface Post {

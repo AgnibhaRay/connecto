@@ -3,11 +3,12 @@
 
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import type { UserProfile } from '@/types';
+import { logActivity } from '@/lib/utils/activityLogger';
 
 interface FormData {
   email: string;
@@ -79,14 +80,13 @@ export default function RegisterForm() {
         displayName: formData.displayName,
       });
 
-      const now = new Date();
-
+      // Create user data
       const userData: UserProfile = {
         uid: userCredential.user.uid,
         email: formData.email,
         displayName: formData.displayName,
         username: formData.username.toLowerCase(),
-        graduationYear: parseInt(formData.graduationYear, 10), // Convert to number
+        graduationYear: parseInt(formData.graduationYear, 10),
         house: formData.house,
         currentLocation: formData.currentLocation,
         occupation: formData.occupation,
@@ -95,13 +95,21 @@ export default function RegisterForm() {
         bio: formData.bio || '',
         following: [],
         followers: [],
-        createdAt: now, // Create actual Date object
-        updatedAt: now, // Add updatedAt field
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         isVerified: false,
-        isAdmin: false,
+        isAdmin: false
       };
 
       await setDoc(doc(db, 'users', userCredential.user.uid), userData);
+
+      // Log the registration activity
+      await logActivity({
+        action: 'user_registration',
+        userId: userCredential.user.uid,
+        userName: formData.displayName || formData.email,
+        details: 'New user registration'
+      });
 
       toast.success('Successfully registered!');
       router.push('/feed');

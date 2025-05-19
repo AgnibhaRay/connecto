@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { logActivity } from '@/lib/utils/activityLogger';
 
 export default function SignInForm() {
   const router = useRouter();
@@ -20,7 +21,12 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      await logActivity({
+        action: 'login',
+        userId: userCredential.user.uid,
+        userName: userCredential.user.displayName || userCredential.user.email || 'unknown'
+      });
       toast.success('Successfully signed in!');
       router.push('/feed');
     } catch (error: unknown) {

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase/config';
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '@/components/auth/AuthProvider';
 import toast from 'react-hot-toast';
 import type { UserProfile } from '@/types';
+import { logActivity } from '@/lib/utils/activityLogger';
 
 interface VerificationControlsProps {
   targetUser: UserProfile;
@@ -56,10 +57,21 @@ export default function VerificationControls({ targetUser }: VerificationControl
 
     setIsUpdating(true);
     try {
+      // The new verification status is the opposite of the current status
+      const newVerificationStatus = !localVerificationStatus;
       const userRef = doc(db, 'users', targetUser.uid);
       await updateDoc(userRef, {
-        isVerified: !localVerificationStatus,
-        updatedAt: new Date()
+        isVerified: newVerificationStatus,
+        updatedAt: serverTimestamp()
+      });
+      
+      // Log the verification change activity
+      await logActivity({
+        action: 'user_verified',
+        userId: user.uid,
+        userName: user.displayName || user.email || 'unknown',
+        targetId: targetUser.uid,
+        details: `User verification ${newVerificationStatus ? 'granted' : 'removed'} for ${targetUser.displayName || targetUser.email}`
       });
       
       toast.success(localVerificationStatus ? 

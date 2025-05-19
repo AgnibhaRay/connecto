@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { db } from '@/lib/firebase/config';
-import { doc, updateDoc, arrayUnion, Timestamp } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, Timestamp, onSnapshot, DocumentSnapshot } from 'firebase/firestore';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-import type { Comment } from '@/types';
+import type { Comment, UserProfile } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface CommentInputProps {
@@ -16,10 +16,30 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
   const { user } = useAuth();
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuspended, setIsSuspended] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Subscribe to user document to check suspension status
+    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot: DocumentSnapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.data() as UserProfile;
+        setIsSuspended(userData.isSuspended || false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !comment.trim() || isSubmitting) return;
+
+    if (isSuspended) {
+      toast.error('Your account is suspended. You cannot add comments.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -70,10 +90,11 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
           type="text"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Add a comment..."
+          placeholder={isSuspended ? 'Your account is suspended' : 'Add a comment...'}
           className="w-full bg-blue-50 rounded-full px-4 py-2 text-sm text-black placeholder-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
           aria-label="Comment input"
           maxLength={1000}
+          disabled={isSuspended}
           enterKeyHint="send"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -87,9 +108,13 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
       </div>
       <button
         type="submit"
-        disabled={!comment.trim() || isSubmitting}
+        disabled={!comment.trim() || isSubmitting || isSuspended}
         className="text-blue-500 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 hover:bg-blue-100 rounded-full active:bg-blue-200 transition-colors"
-        aria-label={isSubmitting ? "Posting comment..." : "Post comment"}
+        aria-label={
+          isSuspended ? "Account suspended" : 
+          isSubmitting ? "Posting comment..." : 
+          "Post comment"
+        }
       >
         {isSubmitting ? 'Posting...' : 'Post'}
       </button>

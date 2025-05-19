@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { auth, db, storage } from '@/lib/firebase/config';
 import { useAuthState } from 'react-firebase-hooks/auth';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, onSnapshot, DocumentSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { PhotoIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { Post } from '@/types';
+import type { UserProfile } from '@/types';
 import Image from 'next/image';
+import { logActivity } from '@/lib/utils/activityLogger';
 import { processImageFile, isHeicFile } from '@/lib/utils/imageUtils';
 
 export default function CreatePost() {
@@ -23,9 +22,24 @@ export default function CreatePost() {
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [isSuspended, setIsSuspended] = useState(false);
 
   const MAX_VIDEO_SIZE_MB = 100; // 100MB max video size
   const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Subscribe to user document to check suspension status
+    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot: DocumentSnapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.data() as UserProfile;
+        setIsSuspended(userData.isSuspended || false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,6 +93,11 @@ export default function CreatePost() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !content.trim()) return;
+    
+    if (isSuspended) {
+      toast.error('Your account is suspended. You cannot create new posts.');
+      return;
+    }
 
     setIsUploading(true);
     try {
@@ -131,10 +150,19 @@ export default function CreatePost() {
         ...(videoURL && { videoURL }),
         likes: [],
         comments: [],
-        createdAt: Timestamp.now()
+        createdAt: serverTimestamp()
       };
 
-      await addDoc(collection(db, 'posts'), postData);
+      const postRef = await addDoc(collection(db, 'posts'), postData);
+      
+      // Log post creation activity
+      await logActivity({
+        action: 'post_created',
+        userId: user.uid,
+        userName: user.displayName || user.email || 'Anonymous',
+        targetId: postRef.id,
+        details: `Created new post: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`
+      });
       
       setContent('');
       setSelectedImage(null);

@@ -1,7 +1,12 @@
 {
+  "/(admin)/admin/activity/page": "app/(admin)/admin/activity/page.js",
+  "/(admin)/admin/moderation/page": "app/(admin)/admin/moderation/page.js",
   "/(admin)/admin/page": "app/(admin)/admin/page.js",
   "/(auth)/auth/page": "app/(auth)/auth/page.js",
+  "/(main)/chat/page": "app/(main)/chat/page.js",
+  "/(main)/events/page": "app/(main)/events/page.js",
   "/(main)/feed/page": "app/(main)/feed/page.js",
+  "/(main)/profile/page": "app/(main)/profile/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js"
 }
