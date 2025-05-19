@@ -199,7 +199,7 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
             <p className="text-gray-900 text-lg mb-6">{post.content}</p>
             
             {/* Post image if exists */}
-            {post.imageURL && (
+            {post.imageURL && !post.videoURL && (
               <div className="mb-6 relative h-96">
                 <Image
                   src={post.imageURL}
@@ -207,6 +207,17 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
                   className="rounded-lg object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 768px"
+                />
+              </div>
+            )}
+            {post.videoURL && (
+              <div className="mb-6 relative w-full">
+                <video
+                  src={post.videoURL}
+                  controls
+                  className="w-full rounded-lg"
+                  style={{ maxHeight: '600px', objectFit: 'contain' }}
+                  preload="metadata"
                 />
               </div>
             )}

@@ -173,7 +173,7 @@ export default function PostCard({ post: initialPost }: PostCardProps) {
             {post.content}
           </p>
           
-          {post.imageURL && (
+          {post.imageURL && !post.videoURL && (
             <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-50">
               <Image
                 src={post.imageURL}
@@ -183,6 +183,16 @@ export default function PostCard({ post: initialPost }: PostCardProps) {
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 75vw, 50vw"
                 priority={false}
                 loading="lazy"
+              />
+            </div>
+          )}
+          {post.videoURL && (
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-50">
+              <video
+                src={post.videoURL}
+                controls
+                className="w-full h-full object-cover"
+                preload="metadata"
               />
             </div>
           )}

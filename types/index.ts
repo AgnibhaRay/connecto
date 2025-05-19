@@ -26,6 +26,7 @@ export interface Post {
   authorPhotoURL?: string;
   content: string;
   imageURL?: string;
+  videoURL?: string;
   likes: string[];
   comments: Comment[];
   createdAt: Date;

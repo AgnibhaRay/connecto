@@ -7,12 +7,15 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Navigation from '@/components/shared/Navigation';
+import Image from 'next/image';
 
 export default function EditPostClient({ id }: { id: string }) {
   const [user] = useAuthState(auth);
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [currentImageURL, setCurrentImageURL] = useState<string | null>(null);
+  const [currentVideoURL, setCurrentVideoURL] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,6 +40,8 @@ export default function EditPostClient({ id }: { id: string }) {
         }
 
         setContent(postData.content);
+        setCurrentImageURL(postData.imageURL || null);
+        setCurrentVideoURL(postData.videoURL || null);
       } catch (error) {
         console.error('Error fetching post:', error);
         toast.error('Failed to load post');
@@ -57,6 +62,8 @@ export default function EditPostClient({ id }: { id: string }) {
       const postRef = doc(db, 'posts', id);
       await updateDoc(postRef, {
         content: content.trim(),
+        imageURL: currentImageURL,
+        videoURL: currentVideoURL,
         updatedAt: new Date()
       });
 
@@ -103,8 +110,8 @@ export default function EditPostClient({ id }: { id: string }) {
         <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Post</h1>
           
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
+          <form onSubmit={handleSubmit}>          <div className="space-y-6">
+            <div>
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Content
               </label>
@@ -117,6 +124,47 @@ export default function EditPostClient({ id }: { id: string }) {
                 placeholder="What's on your mind?"
                 required
               />
+            </div>
+            
+            {currentImageURL && (
+              <div className="relative w-full">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Current Image</label>
+                <div className="relative w-full h-64">
+                  <Image
+                    src={currentImageURL}
+                    alt="Current post image"
+                    className="rounded-lg object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 768px"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCurrentImageURL(null)}
+                  className="mt-2 text-sm text-red-600 hover:text-red-800"
+                >
+                  Remove image
+                </button>
+              </div>
+            )}
+            
+            {currentVideoURL && (
+              <div className="relative w-full">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Current Video</label>
+                <video
+                  src={currentVideoURL}
+                  controls
+                  className="w-full h-64 rounded-lg object-contain bg-black"
+                />
+                <button
+                  type="button"
+                  onClick={() => setCurrentVideoURL(null)}
+                  className="mt-2 text-sm text-red-600 hover:text-red-800"
+                >
+                  Remove video
+                </button>
+              </div>
+            )}
             </div>
 
             <div className="flex justify-end space-x-4">

@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { PhotoIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Post } from '@/types';
@@ -18,12 +18,22 @@ export default function CreatePost() {
   const [content, setContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+
+  const MAX_VIDEO_SIZE_MB = 100; // 100MB max video size
+  const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Clear video if an image is selected
+      setSelectedVideo(null);
+      setVideoPreview(null);
+
       // Check if it's a HEIC file and notify the user
       if (isHeicFile(file)) {
         toast.success('Converting HEIC image to JPEG format...');
@@ -38,6 +48,34 @@ export default function CreatePost() {
     }
   };
 
+  const handleVideoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate video file type
+      if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+        toast.error('Please upload a valid video file (MP4, WebM, or QuickTime)');
+        return;
+      }
+
+      // Validate video file size
+      if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+        toast.error(`Video size must be less than ${MAX_VIDEO_SIZE_MB}MB`);
+        return;
+      }
+
+      // Clear image if a video is selected
+      setSelectedImage(null);
+      setImagePreview(null);
+
+      setSelectedVideo(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setVideoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !content.trim()) return;
@@ -45,6 +83,7 @@ export default function CreatePost() {
     setIsUploading(true);
     try {
       let imageURL = '';
+      let videoURL = '';
       
       if (selectedImage) {
         try {
@@ -71,12 +110,25 @@ export default function CreatePost() {
         }
       }
 
+      if (selectedVideo) {
+        try {
+          // Upload the video
+          const videoRef = ref(storage, `posts/${user.uid}/${Date.now()}_${selectedVideo.name}`);
+          await uploadBytes(videoRef, selectedVideo);
+          videoURL = await getDownloadURL(videoRef);
+        } catch (error) {
+          console.error('Video upload error:', error);
+          toast.error('Failed to upload video. Your post will be created without the video.');
+        }
+      }
+
       const postData = {
         authorId: user.uid,
         authorName: user.displayName || 'Anonymous',
         authorPhotoURL: user.photoURL || '/images/default-avatar.png',
         content,
         ...(imageURL && { imageURL }),
+        ...(videoURL && { videoURL }),
         likes: [],
         comments: [],
         createdAt: Timestamp.now()
@@ -86,7 +138,9 @@ export default function CreatePost() {
       
       setContent('');
       setSelectedImage(null);
+      setSelectedVideo(null);
       setImagePreview(null);
+      setVideoPreview(null);
       toast.success('Post created successfully!');
     } catch (error) {
       console.error('Failed to create post:', error);
@@ -141,6 +195,25 @@ export default function CreatePost() {
               </button>
             </div>
           )}
+          {videoPreview && (
+            <div className="mt-2 relative">
+              <video
+                src={videoPreview}
+                controls
+                className="rounded-lg w-full h-48 object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedVideo(null);
+                  setVideoPreview(null);
+                }}
+                className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70"
+              >
+                ×
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between border-t pt-3">
@@ -158,6 +231,21 @@ export default function CreatePost() {
             ref={fileInputRef}
             onChange={handleImageChange}
             accept="image/*"
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => videoInputRef.current?.click()}
+            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <VideoCameraIcon className="h-5 w-5 mr-2" />
+            Video
+          </button>
+          <input
+            type="file"
+            ref={videoInputRef}
+            onChange={handleVideoChange}
+            accept="video/*"
             className="hidden"
           />
         </div>

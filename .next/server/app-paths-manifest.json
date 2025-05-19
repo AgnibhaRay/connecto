@@ -1,9 +1,6 @@
 {
-  "/(main)/chat/page": "app/(main)/chat/page.js",
-  "/(main)/events/page": "app/(main)/events/page.js",
   "/(main)/feed/page": "app/(main)/feed/page.js",
   "/(main)/posts/[id]/page": "app/(main)/posts/[id]/page.js",
-  "/(main)/profile/edit/page": "app/(main)/profile/edit/page.js",
   "/(main)/profile/page": "app/(main)/profile/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js"
