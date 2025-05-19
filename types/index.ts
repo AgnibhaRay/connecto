@@ -91,6 +91,7 @@ export interface Story {
   authorName: string;
   authorPhotoURL?: string;
   mediaURL: string;
+  storagePath: string;
   mediaType: 'image' | 'video';
   caption?: string;
   createdAt: Date | { seconds: number; nanoseconds: number };

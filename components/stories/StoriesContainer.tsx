@@ -2,11 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '@/lib/firebase/config';
-import { collection, query, where, orderBy, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { auth, db, storage } from '@/lib/firebase/config';
+import { collection, query, where, orderBy, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
 import Image from 'next/image';
 import type { Story } from '@/types';
 import CreateStory from './CreateStory';
+import { TrashIcon } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
 
 interface GroupedStories {
   [authorId: string]: {
@@ -260,6 +263,40 @@ export default function StoriesContainer() {
     }
   }, [selectedStory, handleNextStory, isPaused]);
 
+  const handleDeleteStory = async (story: Story) => {
+    if (!user || user.uid !== story.authorId) return;
+
+    try {
+      // Try to get a valid storage path, either from storagePath or extract from mediaURL
+      let storagePath = '';
+      if (story.storagePath && story.storagePath !== '') {
+        storagePath = story.storagePath;
+      } else {
+        // Extract path from mediaURL (after /o/ and before ?)
+        const urlMatch = story.mediaURL.match(/\/o\/(.+?)\?/);
+        if (urlMatch && urlMatch[1]) {
+          storagePath = decodeURIComponent(urlMatch[1]);
+        } else {
+          throw new Error('Could not determine storage path');
+        }
+      }
+
+      // Delete the media from storage
+      const storageRef = ref(storage, storagePath);
+      await deleteObject(storageRef);
+
+      // Delete the story document
+      await deleteDoc(doc(db, 'stories', story.id));
+
+      // Close the story viewer
+      setSelectedStory(null);
+      toast.success('Story deleted successfully');
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      toast.error('Failed to delete story');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex space-x-4 overflow-x-auto p-4 bg-white rounded-lg shadow mb-4">
@@ -312,13 +349,25 @@ export default function StoriesContainer() {
       {/* Story Viewer Modal */}
       {selectedStory && (
         <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-          <button
-            onClick={() => setSelectedStory(null)}
-            className="absolute top-4 right-4 text-white text-2xl z-10"
-          >
-            ×
-          </button>
-          
+          <div className="absolute top-4 right-4 flex items-center space-x-4 z-10">
+            {user?.uid === selectedStory.authorId && (
+              <button
+                onClick={() => handleDeleteStory(selectedStory)}
+                className="text-white p-2 hover:text-red-500 transition-colors"
+                title="Delete story"
+              >
+                <TrashIcon className="h-6 w-6" />
+              </button>
+            )}
+            <button
+              onClick={() => setSelectedStory(null)}
+              className="text-white text-2xl hover:text-gray-300 transition-colors"
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
+
           {/* Progress bar for both images and videos */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gray-700">
             <div 

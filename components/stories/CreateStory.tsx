@@ -87,16 +87,19 @@ export default function CreateStory() {
       let mediaURL = '';
       const isVideo = selectedFile.type.startsWith('video/');
       
+      let storagePath = '';
       if (isVideo) {
         // Upload video directly
-        const videoRef = ref(storage, `stories/${user.uid}/${Date.now()}_${selectedFile.name}`);
+        storagePath = `stories/${user.uid}/${Date.now()}_${selectedFile.name}`;
+        const videoRef = ref(storage, storagePath);
         await uploadBytes(videoRef, selectedFile);
         mediaURL = await getDownloadURL(videoRef);
       } else {
         // Process and upload image
         try {
           const processedImage = await processImageFile(selectedFile);
-          const imageRef = ref(storage, `stories/${user.uid}/${Date.now()}_${processedImage.name}`);
+          storagePath = `stories/${user.uid}/${Date.now()}_${processedImage.name}`;
+          const imageRef = ref(storage, storagePath);
           await uploadBytes(imageRef, processedImage);
           mediaURL = await getDownloadURL(imageRef);
         } catch (error) {
@@ -116,6 +119,7 @@ export default function CreateStory() {
         authorName: user.displayName || 'Anonymous',
         authorPhotoURL: user.photoURL || '/images/default-avatar.png',
         mediaURL,
+        storagePath,
         mediaType: isVideo ? 'video' : 'image',
         caption: caption.trim() || null,
         createdAt: now,
