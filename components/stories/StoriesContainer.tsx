@@ -54,11 +54,11 @@ export default function StoriesContainer() {
     setIsPaused(false);
     
     // Mark story as viewed if not already viewed
-    if (user && !userStories[index].viewedBy.includes(user?.uid || '')) {
+    if (user && !(userStories[index].viewedBy || []).includes(user?.uid || '')) {
       try {
         const storyRef = doc(db, 'stories', userStories[index].id);
         await updateDoc(storyRef, {
-          viewedBy: [...userStories[index].viewedBy, user.uid]
+          viewedBy: [...(userStories[index].viewedBy || []), user.uid]
         });
         // No need to update state manually - the onSnapshot listener will catch this change
       } catch (error) {
@@ -317,7 +317,7 @@ export default function StoriesContainer() {
         
         {Object.entries(storiesByUser).map(([authorId, { authorName, authorPhotoURL, stories }]) => {
           const allStoriesViewed = stories.every(story => 
-            story.viewedBy.includes(user?.uid || '')
+            (story.viewedBy || []).includes(user?.uid || '')
           );
 
           return (

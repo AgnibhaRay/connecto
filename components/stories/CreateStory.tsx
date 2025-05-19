@@ -3,13 +3,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { auth, db, storage } from '@/lib/firebase/config';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { collection, addDoc, doc, onSnapshot, DocumentSnapshot } from 'firebase/firestore';
+import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { processImageFile } from '@/lib/utils/imageUtils';
 import Image from 'next/image';
-import { logActivity } from '@/lib/utils/activityLogger';
 import type { UserProfile } from '@/types';
 
 export default function CreateStory() {
@@ -17,17 +16,20 @@ export default function CreateStory() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSuspended, setIsSuspended] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [caption, setCaption] = useState('');
+  const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imageOrientation, setImageOrientation] = useState<'portrait' | 'landscape' | 'square'>('portrait');
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     if (!user) return;
-
+    
     // Subscribe to user document to check suspension status
-    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot: DocumentSnapshot) => {
+    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
       if (snapshot.exists()) {
         const userData = snapshot.data() as UserProfile;
-        setIsSuspended(userData.isSuspended || false);
+        setIsSuspended(!!userData.isSuspended);
       }
     });
 
@@ -35,30 +37,70 @@ export default function CreateStory() {
   }, [user]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isSuspended) {
+      toast.error('Your account is suspended. You cannot create stories.');
+      return;
+    }
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.type.startsWith('video/')) {
-      toast.error('Videos are not supported for stories');
+    // Validate file type
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      toast.error('Please select an image or video file');
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+    // Validate file size (10MB for images, 50MB for videos)
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error(`File size must be less than ${isVideo ? '50MB' : '10MB'}`);
       return;
     }
 
     setSelectedFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    
+    if (isImage) {
+      // Determine image orientation for proper preview styling
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          const img = document.createElement('img');
+          img.src = e.target.result as string;
+          
+          img.onload = () => {
+            if (img.width > img.height) {
+              setImageOrientation('landscape');
+            } else if (img.width < img.height) {
+              setImageOrientation('portrait');
+            } else {
+              setImageOrientation('square');
+            }
+            setImageDimensions({ width: img.width, height: img.height });
+            setPreview(img.src);
+          };
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    } else {
+      // For videos, just set the preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setPreview(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !selectedFile) return;
+    if (!user || !selectedFile || isUploading) return;
 
     if (isSuspended) {
       toast.error('Your account is suspended. You cannot create stories.');
@@ -67,39 +109,55 @@ export default function CreateStory() {
 
     setIsUploading(true);
     try {
-      // Process the image
-      const processedImage = await processImageFile(selectedFile);
+      let mediaURL = '';
+      const isVideo = selectedFile.type.startsWith('video/');
       
-      // Upload image to storage
-      const imageRef = ref(storage, `stories/${user.uid}/${Date.now()}_${processedImage.name}`);
-      await uploadBytes(imageRef, processedImage);
-      const imageURL = await getDownloadURL(imageRef);
+      let storagePath = '';
+      if (isVideo) {
+        // Upload video directly
+        storagePath = `stories/${user.uid}/${Date.now()}_${selectedFile.name}`;
+        const videoRef = ref(storage, storagePath);
+        await uploadBytes(videoRef, selectedFile);
+        mediaURL = await getDownloadURL(videoRef);
+      } else {
+        // Process and upload image
+        try {
+          const processedImage = await processImageFile(selectedFile);
+          storagePath = `stories/${user.uid}/${Date.now()}_${processedImage.name}`;
+          const imageRef = ref(storage, storagePath);
+          await uploadBytes(imageRef, processedImage);
+          mediaURL = await getDownloadURL(imageRef);
+        } catch (error) {
+          console.error('Image processing error:', error);
+          toast.error('Failed to process image');
+          return;
+        }
+      }
+
+      // Calculate expiration time (24 hours from now)
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
       // Create story document
-      const storyData = {
+      await addDoc(collection(db, 'stories'), {
         authorId: user.uid,
         authorName: user.displayName || 'Anonymous',
         authorPhotoURL: user.photoURL || '/images/default-avatar.png',
-        imageURL,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
-      };
-
-      await addDoc(collection(db, 'stories'), storyData);
-
-      // Log the activity
-      await logActivity({
-        action: 'story_created',
-        userId: user.uid,
-        userName: user.displayName || user.email || 'Anonymous',
-        details: 'Created a new story'
+        mediaURL,
+        storagePath,
+        mediaType: isVideo ? 'video' : 'image',
+        caption: caption.trim() || null,
+        createdAt: now,
+        expiresAt,
+        viewedBy: [],
+        orientation: isVideo ? null : imageOrientation, // Store image orientation for proper display
       });
 
-      // Reset form
-      setSelectedFile(null);
-      setImagePreview(null);
-      
       toast.success('Story created successfully!');
+      setPreview(null);
+      setSelectedFile(null);
+      setCaption('');
+      setImageDimensions(null);
     } catch (error) {
       console.error('Error creating story:', error);
       toast.error('Failed to create story');
@@ -111,57 +169,92 @@ export default function CreateStory() {
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
+    <div className="relative group">
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        className="w-14 h-14 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center hover:border-indigo-500 transition-colors"
+      >
+        <PlusIcon className="h-6 w-6 text-gray-500 group-hover:text-indigo-500" />
+      </button>
       <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept="image/*"
+        accept="image/*,video/*"
         className="hidden"
       />
-      {!selectedFile ? (
-        <button
-          type="button"
-          onClick={() => !isSuspended && fileInputRef.current?.click()}
-          disabled={isSuspended}
-          className="relative h-40 w-28 rounded-3xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          title={isSuspended ? 'Your account is suspended' : 'Create a story'}
-        >
-          <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-            <PlusIcon className="h-6 w-6 text-gray-500" />
+
+      {/* Preview Modal */}
+      {preview && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full p-4">
+            <div className="space-y-4">
+              {selectedFile?.type.startsWith('video/') ? (
+                <video src={preview} controls className="w-full rounded-lg" />
+              ) : (
+                <div className="flex justify-center">
+                  <div className={`relative overflow-hidden rounded-lg ${
+                    imageOrientation === 'portrait' 
+                      ? 'max-h-[70vh] w-auto' 
+                      : imageOrientation === 'landscape' 
+                        ? 'max-w-full h-auto' 
+                        : 'w-full max-w-[70vh] max-h-[70vh]'
+                  }`}>
+                    {imageDimensions && (
+                      <div style={{ 
+                        position: 'relative', 
+                        width: imageOrientation === 'portrait' ? 'auto' : '100%',
+                        height: imageOrientation === 'portrait' ? '70vh' : 'auto',
+                        minWidth: '300px',
+                        margin: '0 auto'
+                      }}>
+                        <Image 
+                          src={preview} 
+                          alt="Story preview" 
+                          className="object-contain"
+                          fill={true}
+                          sizes="(max-width: 768px) 100vw, 500px"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              <input
+                type="text"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder="Add a caption..."
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-100 text-gray-800 placeholder-gray-500 border-gray-300"
+                maxLength={100}
+              />
+              
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreview(null);
+                    setSelectedFile(null);
+                    setCaption('');
+                    setImageDimensions(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isUploading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50"
+                >
+                  {isUploading ? 'Creating...' : 'Share Story'}
+                </button>
+              </div>
+            </div>
           </div>
-          <span className="text-xs text-gray-500">Create Story</span>
-        </button>
-      ) : (
-        <div className="relative h-40 w-28">
-          <div className="absolute inset-0 rounded-3xl overflow-hidden">
-            <Image
-              src={imagePreview || ''}
-              alt="Story preview"
-              className="object-cover"
-              fill
-              sizes="112px"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedFile(null);
-              setImagePreview(null);
-            }}
-            className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70"
-          >
-            ×
-          </button>
-          <button
-            type="submit"
-            disabled={isUploading}
-            className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUploading ? 'Posting...' : 'Post Story'}
-          </button>
         </div>
       )}
-    </form>
+    </div>
   );
 }
