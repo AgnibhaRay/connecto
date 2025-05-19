@@ -89,7 +89,99 @@ export const convertHeicToJpeg = async (file: File): Promise<File> => {
 };
 
 /**
- * Processes an image file, converting HEIC to JPEG if necessary
+ * Resizes an image to fit within the specified dimensions while maintaining aspect ratio
+ * @param file The image file to resize
+ * @param maxWidth Maximum width of the resized image
+ * @param maxHeight Maximum height of the resized image
+ * @param quality JPEG quality (0-1), defaults to 0.9
+ * @returns A Promise that resolves to a new File object with the resized image
+ */
+export const resizeImage = async (
+  file: File, 
+  maxWidth: number = 1080, 
+  maxHeight: number = 1920, 
+  quality: number = 0.9
+): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    try {
+      // Create a new image object
+      const img = new Image();
+      const reader = new FileReader();
+      
+      // When the file is loaded as a data URL, set it as the image source
+      reader.onload = (e) => {
+        if (!e.target?.result) {
+          reject(new Error('Failed to read file'));
+          return;
+        }
+        
+        img.src = e.target.result as string;
+        
+        // When the image is loaded, resize it
+        img.onload = () => {
+          // Calculate the resized dimensions while maintaining aspect ratio
+          let width = img.width;
+          let height = img.height;
+          
+          // First check if we need to resize the width
+          if (width > maxWidth) {
+            height = Math.round(height * (maxWidth / width));
+            width = maxWidth;
+          }
+          
+          // Then check if we need to resize the height further
+          if (height > maxHeight) {
+            width = Math.round(width * (maxHeight / height));
+            height = maxHeight;
+          }
+          
+          // Create a canvas with the resized dimensions
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw the resized image on the canvas
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Failed to get canvas context'));
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convert the canvas to a blob
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error('Failed to create blob from canvas'));
+              return;
+            }
+            
+            // Create a new file object with the resized image
+            const newFileName = file.name.replace(/\.[^.]+$/, '.jpg');
+            const resizedFile = new File([blob], newFileName, { type: 'image/jpeg' });
+            resolve(resizedFile);
+          }, 'image/jpeg', quality);
+        };
+        
+        img.onerror = () => {
+          reject(new Error('Failed to load image'));
+        };
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error resizing image:', error);
+      reject(error);
+    }
+  });
+};
+
+/**
+ * Processes an image file, converting HEIC to JPEG if necessary and resizing to fit standards
  * @param file The image file to process
  * @returns A Promise that resolves to the processed file
  */
@@ -97,11 +189,20 @@ export const processImageFile = async (file: File): Promise<File> => {
   if (!file) return file;
   
   try {
+    // First handle HEIC conversion if needed
+    let processedFile = file;
     if (isHeicFile(file)) {
       console.log(`Processing HEIC image: ${file.name}`);
-      return await convertHeicToJpeg(file);
+      processedFile = await convertHeicToJpeg(file);
     }
-    return file;
+    
+    // Then resize the image to ensure it's not too large
+    if (processedFile.type.startsWith('image/')) {
+      console.log(`Resizing image: ${processedFile.name}`);
+      return await resizeImage(processedFile, 1080, 1920, 0.9);
+    }
+    
+    return processedFile;
   } catch (error) {
     console.error('Error processing image file:', error);
     // Alert but don't break the upload - return the original file as fallback

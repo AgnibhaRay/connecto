@@ -84,3 +84,17 @@ export interface Message {
   createdAt: Date;
   readBy: string[]; // Array of user IDs who have read the message
 }
+
+export interface Story {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorPhotoURL?: string;
+  mediaURL: string;
+  mediaType: 'image' | 'video';
+  caption?: string;
+  createdAt: Date | { seconds: number; nanoseconds: number };
+  expiresAt: Date | { seconds: number; nanoseconds: number };
+  viewedBy: string[];
+  orientation?: 'portrait' | 'landscape' | 'square' | null;
+}

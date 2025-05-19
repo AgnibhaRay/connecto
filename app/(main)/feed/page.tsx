@@ -12,6 +12,7 @@ import type { Post } from '@/types';
 
 // Lazy load non-critical components
 const CreatePost = lazy(() => import('@/components/feed/CreatePost'));
+const StoriesContainer = lazy(() => import('@/components/stories/StoriesContainer'));
 
 export default function FeedPage() {
   const [user, loading] = useAuthState(auth);
@@ -50,9 +51,9 @@ export default function FeedPage() {
     )
   );
 
-  const posts = postsSnapshot?.docs.map((doc, index) => ({
+  const posts = postsSnapshot?.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data(),
+    ...doc.data()
   })) as Post[] | undefined;
 
   // Log LCP completion event
@@ -61,8 +62,6 @@ export default function FeedPage() {
       const handleLCPComplete = (e: Event) => {
         if ((e as CustomEvent).detail && window.performance && 'mark' in window.performance) {
           window.performance.mark('lcp-complete');
-          
-          // Report to analytics in production
           const lcpTime = window.performance.now();
           console.log(`LCP completed in: ${lcpTime}ms`);
         }
@@ -79,7 +78,14 @@ export default function FeedPage() {
         <Navigation />
         <main className="container mx-auto max-w-2xl px-4 py-8">
           <div className="animate-pulse space-y-4">
-            <div className="h-40 bg-white rounded-lg shadow p-4 mb-4">
+            <div className="h-14 bg-white rounded-lg shadow mb-4">
+              <div className="flex space-x-4 p-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="w-14 h-14 bg-gray-200 rounded-full flex-shrink-0" />
+                ))}
+              </div>
+            </div>
+            <div className="h-40 bg-white rounded-lg shadow p-4">
               <div className="flex items-center mb-3">
                 <div className="h-10 w-10 bg-gray-200 rounded-full mr-3"></div>
                 <div className="h-8 w-full bg-gray-200 rounded"></div>
@@ -88,7 +94,6 @@ export default function FeedPage() {
                 <div className="h-10 w-24 bg-gray-200 rounded"></div>
               </div>
             </div>
-            <div className="h-60 bg-white rounded-lg shadow" />
           </div>
         </main>
       </div>
@@ -102,6 +107,18 @@ export default function FeedPage() {
       <Navigation />
       <main className="container mx-auto max-w-2xl px-4 py-8">
         <Suspense fallback={
+          <div className="h-14 bg-white rounded-lg shadow mb-4 animate-pulse">
+            <div className="flex space-x-4 p-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-14 h-14 bg-gray-200 rounded-full flex-shrink-0" />
+              ))}
+            </div>
+          </div>
+        }>
+          <StoriesContainer />
+        </Suspense>
+
+        <Suspense fallback={
           <div className="h-40 bg-white rounded-lg shadow p-4 mb-4 animate-pulse">
             <div className="flex items-center mb-3">
               <div className="h-10 w-10 bg-gray-200 rounded-full mr-3"></div>
@@ -114,6 +131,7 @@ export default function FeedPage() {
         }>
           <CreatePost />
         </Suspense>
+
         <div className="space-y-4">
           {posts?.map((post) => (
             <PostCard 
