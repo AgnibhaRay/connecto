@@ -74,6 +74,9 @@ export default function RootLayout({
                   <p className="text-center text-sm text-gray-400 mt-2">
                     Developed by Agnibha Ray
                   </p>
+                  <p className="text-center text-sm text-gray-400 mt-2">
+                    Powered by Google Cloud Platform
+                  </p>
                 </div>
               </div>
             </footer>

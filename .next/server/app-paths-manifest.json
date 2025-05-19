@@ -1,8 +1,5 @@
 {
   "/(auth)/auth/page": "app/(auth)/auth/page.js",
   "/(main)/feed/page": "app/(main)/feed/page.js",
-  "/(main)/posts/[id]/page": "app/(main)/posts/[id]/page.js",
-  "/(main)/profile/page": "app/(main)/profile/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }
