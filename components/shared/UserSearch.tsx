@@ -1,17 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { UserProfile } from '@/types';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 export default function UserSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsFocused(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSearch = async (value: string) => {
     setSearchTerm(value);
@@ -73,53 +88,88 @@ export default function UserSearch() {
   const handleSelect = (user: UserProfile) => {
     setSearchTerm('');
     setSearchResults([]);
+    setIsFocused(false);
     router.push(`/profile?username=${user.username}`);
   };
 
-  return (
-    <div className="relative">
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Search users..."
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
+  const highlightMatch = (text: string, query: string) => {
+    if (!query) return text;
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    return parts.map((part, i) => 
+      part.toLowerCase() === query.toLowerCase() ? 
+        <span key={i} className="text-obsidian">{part}</span> : part
+    );
+  };
 
-      {loading && (
-        <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md mt-1 shadow-lg p-2">
-          <p className="text-gray-500 text-sm">Loading...</p>
+  return (
+    <div ref={searchRef} className="relative w-full">
+      <div className="relative">
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-felt-gray" />
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          placeholder="Search users..."
+          className="input-field py-2 pl-10 pr-4 text-[12px]"
+        />
+      </div>
+
+      {(loading || searchResults.length > 0) && isFocused && (
+        <div className="menu-panel absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto">
+          {loading ? (
+            <div className="space-y-3 p-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center space-x-3">
+                  <div className="skeleton h-10 w-10"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="skeleton h-4 w-1/4"></div>
+                    <div className="skeleton h-3 w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : searchResults.length > 0 ? (
+            <div className="py-2">
+              {searchResults.map((user) => (
+                <div
+                  key={user.uid}
+                  onClick={() => handleSelect(user)}
+                  className="flex cursor-pointer items-center px-4 py-3 transition-colors duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:bg-obsidian hover:text-paper"
+                >
+                  <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden">
+                    <Image
+                      src={user.photoURL || '/images/default-avatar.png'}
+                      alt={user.displayName || ''}
+                      className="avatar"
+                      fill
+                      sizes="40px"
+                    />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-[14px]">
+                      {highlightMatch(user.displayName, searchTerm)}
+                    </p>
+                    <p className="text-[12px] text-felt-gray">
+                      @{highlightMatch(user.username, searchTerm)}
+                    </p>
+                  </div>
+                  {user.isVerified && (
+                    <span className="tag-pill ml-2">Verified</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
       )}
 
-      {searchResults.length > 0 && (
-        <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-64 overflow-y-auto">
-          {searchResults.map((user) => (
-            <div
-              key={user.uid}
-              onClick={() => handleSelect(user)}
-              className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-            >
-              <Image
-                src={user.photoURL || '/images/default-avatar.png'}
-                alt={user.displayName || 'User avatar'}
-                width={32}
-                height={32}
-                className="rounded-full mr-3"
-              />
-              <div>
-                <p className="font-medium text-gray-900 flex items-center gap-2">
-                  {user.displayName}
-                  {user.isAdmin && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                      Admin
-                    </span>
-                  )}
-                </p>
-                <p className="text-sm text-gray-500">@{user.username}</p>
-              </div>
-            </div>
-          ))}
+      {searchTerm.length > 1 && !loading && searchResults.length === 0 && isFocused && (
+        <div className="menu-panel absolute left-0 right-0 top-full z-50 mt-1">
+          <div className="p-4 text-center text-felt-gray">
+            <div className="mb-1 text-[12px]">No users found</div>
+            <div className="text-[11px]">Try a different search term</div>
+          </div>
         </div>
       )}
     </div>

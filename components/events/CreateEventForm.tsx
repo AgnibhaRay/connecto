@@ -73,7 +73,7 @@ export default function CreateEventForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="title" className="field-label">
           Event Title
         </label>
         <input
@@ -83,12 +83,12 @@ export default function CreateEventForm() {
           required
           value={formData.title}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none p-2 text-black"
+          className="input-field mt-1"
         />
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="field-label">
           Description
         </label>
         <textarea
@@ -98,12 +98,12 @@ export default function CreateEventForm() {
           value={formData.description}
           onChange={handleInputChange}
           rows={4}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none p-2 text-black"
+          className="input-field mt-1"
         />
       </div>
 
       <div>
-        <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="location" className="field-label">
           Location
         </label>
         <input
@@ -113,13 +113,13 @@ export default function CreateEventForm() {
           required
           value={formData.location}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none p-2 text-black"
+          className="input-field mt-1"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="date" className="field-label">
             Date
           </label>
           <input
@@ -129,12 +129,12 @@ export default function CreateEventForm() {
             required
             value={formData.date}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none p-2 text-black"
+            className="input-field mt-1"
           />
         </div>
 
         <div>
-          <label htmlFor="time" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="time" className="field-label">
             Time
           </label>
           <input
@@ -144,13 +144,13 @@ export default function CreateEventForm() {
             required
             value={formData.time}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none p-2 text-black"
+            className="input-field mt-1"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="maxAttendees" className="field-label">
           Maximum Attendees (optional)
         </label>
         <input
@@ -160,7 +160,7 @@ export default function CreateEventForm() {
           min="1"
           value={formData.maxAttendees || ''}
           onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none p-2 text-black"
+          className="input-field mt-1"
         />
       </div>
 
@@ -173,7 +173,7 @@ export default function CreateEventForm() {
           onChange={handleCheckboxChange}
           className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
         />
-        <label htmlFor="isPrivate" className="ml-2 block text-sm text-gray-700">
+        <label htmlFor="isPrivate" className="ml-2 block text-[14px] text-inkstone">
           Make this event private
         </label>
       </div>
@@ -182,13 +182,13 @@ export default function CreateEventForm() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="btn-ghost"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="btn-ghost"
         >
           Create Event
         </button>

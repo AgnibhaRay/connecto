@@ -181,13 +181,13 @@ export default function CreatePost() {
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-4 mb-4">
-      <div className="flex space-x-4">
-        <div className="h-10 w-10 relative">
+    <form onSubmit={handleSubmit} className="editorial-row hairline-bottom pb-[46px]">
+      <div className="flex gap-3.5">
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden">
           <Image
             src={user.photoURL || '/images/default-avatar.png'}
             alt={user.displayName || ''}
-            className="rounded-full"
+            className="avatar"
             fill
             sizes="40px"
           />
@@ -197,16 +197,16 @@ export default function CreatePost() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="What's on your mind?"
-            className="w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+            className="textarea-field min-h-[96px]"
             rows={3}
           />
           {imagePreview && (
-            <div className="mt-2 relative">
-              <div className="relative w-full h-48">
+            <div className="relative mt-3.5">
+              <div className="relative h-48 w-full overflow-hidden">
                 <Image
                   src={imagePreview}
                   alt="Preview"
-                  className="rounded-lg object-cover"
+                  className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 768px"
                 />
@@ -217,18 +217,18 @@ export default function CreatePost() {
                   setSelectedImage(null);
                   setImagePreview(null);
                 }}
-                className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70"
+                className="absolute right-2 top-2 bg-obsidian px-2 py-1 text-[11px] text-paper"
               >
                 ×
               </button>
             </div>
           )}
           {videoPreview && (
-            <div className="mt-2 relative">
+            <div className="relative mt-3.5">
               <video
                 src={videoPreview}
                 controls
-                className="rounded-lg w-full h-48 object-cover"
+                className="h-48 w-full object-cover"
               />
               <button
                 type="button"
@@ -236,7 +236,7 @@ export default function CreatePost() {
                   setSelectedVideo(null);
                   setVideoPreview(null);
                 }}
-                className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70"
+                className="absolute right-2 top-2 bg-obsidian px-2 py-1 text-[11px] text-paper"
               >
                 ×
               </button>
@@ -244,14 +244,14 @@ export default function CreatePost() {
           )}
         </div>
       </div>
-      <div className="mt-3 flex items-center justify-between border-t pt-3">
-        <div className="flex space-x-4">
+      <div className="mt-3.5 flex items-center justify-between">
+        <div className="flex gap-6">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="nav-link inline-flex items-center gap-2 text-felt-gray"
           >
-            <PhotoIcon className="h-5 w-5 mr-2" />
+            <PhotoIcon className="h-5 w-5" />
             Photo
           </button>
           <input
@@ -264,9 +264,9 @@ export default function CreatePost() {
           <button
             type="button"
             onClick={() => videoInputRef.current?.click()}
-            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="nav-link inline-flex items-center gap-2 text-felt-gray"
           >
-            <VideoCameraIcon className="h-5 w-5 mr-2" />
+            <VideoCameraIcon className="h-5 w-5" />
             Video
           </button>
           <input
@@ -280,7 +280,7 @@ export default function CreatePost() {
         <button
           type="submit"
           disabled={!content.trim() || isUploading}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          className="btn-ghost"
         >
           {isUploading ? 'Posting...' : 'Post'}
         </button>

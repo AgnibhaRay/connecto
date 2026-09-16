@@ -1,11 +1,11 @@
 'use client';
 
-import { Menu, Disclosure, Transition } from '@headlessui/react';
+import { Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -19,245 +19,177 @@ interface UserProfile {
   isAdmin?: boolean;
 }
 
+const links = [
+  { href: '/feed', label: 'Feed', match: (p: string) => p === '/feed' },
+  { href: '/chat', label: 'Messages', match: (p: string) => p.startsWith('/chat') },
+  { href: '/events', label: 'Events', match: (p: string) => p.startsWith('/events') },
+];
+
 export default function Navigation() {
   const [user] = useAuthState(auth);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     if (!user) return;
 
-    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (doc) => {
-      if (doc.exists()) {
-        setUserProfile(doc.data());
+    const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      if (snapshot.exists()) {
+        setUserProfile(snapshot.data());
       }
     });
 
     return () => unsubscribe();
   }, [user]);
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   if (!user) return null;
 
+  const navItems = [
+    ...links,
+    ...(userProfile?.isAdmin
+      ? [{ href: '/admin', label: 'Admin', match: (p: string) => p.startsWith('/admin') }]
+      : []),
+  ];
+
   return (
-    <Disclosure as="nav" className="bg-white shadow-sm">
-      {({ open }) => (
-        <>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 justify-between">
-              <div className="flex">
-                <div className="flex flex-shrink-0 items-center">
-                  <Link href="/feed" className="group">
-                    <div className="flex items-center">
-                      <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent transform transition-all duration-300 ease-in-out group-hover:scale-105">
-                        connecto
-                      </span>
-                      <span className="text-2xl font-bold text-purple-600 animate-pulse">+</span>
-                    </div>
-                  </Link>
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  <Link
-                    href="/feed"
-                    className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
-                      pathname === '/feed'
-                        ? 'border-indigo-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                    }`}
-                  >
-                    Feed
-                  </Link>
-                  <Link
-                    href="/chat"
-                    className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
-                      pathname.startsWith('/chat')
-                        ? 'border-indigo-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                    }`}
-                  >
-                    Messages
-                  </Link>
-                  <Link
-                    href="/events"
-                    className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
-                      pathname.startsWith('/events')
-                        ? 'border-indigo-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                    }`}
-                  >
-                    Events
-                  </Link>
-                  {userProfile?.isAdmin && (
+    <header className="fixed inset-x-0 top-0 z-40 h-[66px] bg-transparent">
+      <div className="page-container flex h-full items-center justify-between gap-4">
+        <Link href="/feed" className="nav-link shrink-0 text-[16px] text-obsidian">
+          connecto
+        </Link>
+
+        <nav className="hidden items-center gap-8 lg:flex">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`nav-link text-[11px] uppercase tracking-[0.14em] ${
+                item.match(pathname) ? 'is-active text-obsidian' : 'text-felt-gray'
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden max-w-xs flex-1 md:block lg:max-w-sm">
+          <UserSearch />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Menu as="div" className="relative">
+            <Menu.Button className="block h-8 w-8 overflow-hidden border border-obsidian">
+              <span className="sr-only">Open user menu</span>
+              <Image
+                className="avatar h-8 w-8"
+                src={userProfile?.photoURL || defaultAvatar}
+                alt=""
+                width={32}
+                height={32}
+              />
+            </Menu.Button>
+            <Transition
+              as={Fragment}
+              enter="transition duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)]"
+              enterFrom="transform opacity-0 -translate-y-1"
+              enterTo="transform opacity-100 translate-y-0"
+              leave="transition duration-400 ease"
+              leaveFrom="transform opacity-100"
+              leaveTo="transform opacity-0"
+            >
+              <Menu.Items className="menu-panel absolute right-0 z-20 mt-3 w-48 origin-top-right py-3 focus:outline-none">
+                <Menu.Item>
+                  {({ active }) => (
                     <Link
-                      href="/admin"
-                      className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
-                        pathname.startsWith('/admin')
-                          ? 'border-indigo-500 text-gray-900'
-                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                      }`}
+                      href="/profile"
+                      className={`block px-4 py-2 text-[12px] ${active ? 'bg-obsidian text-paper' : 'text-obsidian'}`}
                     >
-                      Admin
+                      Your Profile
                     </Link>
                   )}
-                </div>
-              </div>
-              
-              <div className="hidden sm:flex sm:items-center sm:w-96">
-                <UserSearch />
-              </div>
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => auth.signOut()}
+                      className={`block w-full px-4 py-2 text-left text-[12px] ${
+                        active ? 'bg-obsidian text-paper' : 'text-obsidian'
+                      }`}
+                    >
+                      Sign out
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Transition>
+          </Menu>
 
-              <div className="flex items-center">
-                <Menu as="div" className="relative ml-3">
-                  <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    <span className="sr-only">Open user menu</span>
-                    <Image
-                      className="h-8 w-8 rounded-full"
-                      src={userProfile?.photoURL || defaultAvatar}
-                      alt=""
-                      width={32}
-                      height={32}
-                    />
-                  </Menu.Button>
-                  <Transition
-                    enter="transition ease-out duration-200"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href={`/profile`}
-                            className={`${
-                              active ? 'bg-gray-100' : ''
-                            } block px-4 py-2 text-sm text-gray-700`}
-                          >
-                            Your Profile
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            onClick={() => auth.signOut()}
-                            className={`${
-                              active ? 'bg-gray-100' : ''
-                            } block w-full px-4 py-2 text-left text-sm text-gray-700`}
-                          >
-                            Sign out
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-                <div className="-mr-2 flex items-center sm:hidden">
-                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-100 hover:text-black focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-colors duration-200">
-                    <span className="sr-only">Open main menu</span>
-                    {open ? (
-                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Disclosure.Button>
-                </div>
-              </div>
-            </div>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center p-1 text-obsidian lg:hidden"
+            onClick={() => setMobileOpen((open) => !open)}
+            aria-label="Open menu"
+          >
+            {mobileOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+          </button>
+        </div>
+      </div>
+
+      {mobileOpen && (
+        <div className="mobile-menu">
+          <div className="flex items-center justify-between">
+            <span className="text-[16px]">connecto</span>
+            <button type="button" onClick={() => setMobileOpen(false)} aria-label="Close menu">
+              <XMarkIcon className="h-6 w-6" />
+            </button>
           </div>
 
-          <Disclosure.Panel className="sm:hidden">
-            <div className="p-3">
-              <UserSearch />
-            </div>
-            <div className="space-y-1 pb-3 pt-2">
+          <div className="mt-10">
+            <UserSearch />
+          </div>
+
+          <nav className="mt-16 flex flex-col gap-8">
+            {navItems.map((item) => (
               <Link
-                href="/feed"
-                className={`block border-l-4 py-2 pl-3 pr-4 text-base font-medium ${
-                  pathname === '/feed'
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                    : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
+                key={item.href}
+                href={item.href}
+                className={`text-[29px] font-light leading-none ${
+                  item.match(pathname) ? 'text-paper' : 'text-ash-mist'
                 }`}
               >
-                Feed
+                {item.label}
               </Link>
-              <Link
-                href="/chat"
-                className={`block border-l-4 py-2 pl-3 pr-4 text-base font-medium ${
-                  pathname.startsWith('/chat')
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                    : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
-                }`}
-              >
-                Messages
-              </Link>
-              <Link
-                href="/events"
-                className={`block border-l-4 py-2 pl-3 pr-4 text-base font-medium ${
-                  pathname.startsWith('/events')
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                    : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
-                }`}
-              >
-                Events
-              </Link>
-              {userProfile?.isAdmin && (
-                <Link
-                  href="/admin"
-                  className={`block border-l-4 py-2 pl-3 pr-4 text-base font-medium ${
-                    pathname.startsWith('/admin')
-                      ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
-                  }`}
-                >
-                  Admin
-                </Link>
-              )}
+            ))}
+          </nav>
+
+          <div className="mt-auto flex items-center gap-4 pt-16">
+            <Image
+              className="avatar h-10 w-10"
+              src={userProfile?.photoURL || defaultAvatar}
+              alt=""
+              width={40}
+              height={40}
+            />
+            <div>
+              <p className="text-[16px] text-paper">{userProfile?.displayName}</p>
+              <p className="text-[11px] text-ash-mist">{userProfile?.email}</p>
             </div>
-            <div className="border-t border-gray-200 pb-3 pt-4">
-              <div className="flex items-center px-4">
-                <div className="flex-shrink-0">
-                  <Image
-                    className="h-10 w-10 rounded-full"
-                    src={userProfile?.photoURL || defaultAvatar}
-                    alt=""
-                    width={40}
-                    height={40}
-                  />
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800 flex items-center gap-2">
-                    {userProfile?.displayName}
-                    {userProfile?.isAdmin && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                        Admin
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-sm font-medium text-gray-500">
-                    {userProfile?.email}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 space-y-1">
-                <Link
-                  href="/profile"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                >
-                  Your Profile
-                </Link>
-                <button
-                  onClick={() => auth.signOut()}
-                  className="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                >
-                  Sign out
-                </button>
-              </div>
-            </div>
-          </Disclosure.Panel>
-        </>
+          </div>
+          <div className="mt-8 flex gap-8 pb-4">
+            <Link href="/profile" className="nav-link text-paper">
+              Profile
+            </Link>
+            <button onClick={() => auth.signOut()} className="nav-link text-paper">
+              Sign out
+            </button>
+          </div>
+        </div>
       )}
-    </Disclosure>
+    </header>
   );
 }

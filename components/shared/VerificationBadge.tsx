@@ -1,7 +1,7 @@
 export default function VerificationBadge() {
   return (
     <svg
-      className="w-4 h-4 inline-block ml-1 text-blue-500"
+      className="ml-1 inline-block h-3.5 w-3.5 text-obsidian"
       viewBox="0 0 24 24"
       fill="currentColor"
     >

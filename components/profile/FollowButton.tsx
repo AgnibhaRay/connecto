@@ -85,11 +85,7 @@ export default function FollowButton({ targetUserId, initialIsFollowing, onFollo
     <button
       onClick={handleFollowToggle}
       disabled={isLoading}
-      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors 
-        ${isFollowing 
-          ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' 
-          : 'bg-blue-600 text-white hover:bg-blue-700'
-        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`btn-ghost ${isFollowing ? '' : ''} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {isLoading ? 'Processing...' : isFollowing ? 'Unfollow' : 'Follow'}
     </button>

@@ -7,7 +7,7 @@ import { updateProfile } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc, collection, query, where, getDocs, getDoc } from 'firebase/firestore';
-import Navigation from '@/components/shared/Navigation';
+import PageShell from '@/components/shared/PageShell';
 import type { UserProfile } from '@/types';
 import toast from 'react-hot-toast';
 import { processImageFile, isHeicFile } from '@/lib/utils/imageUtils';
@@ -122,26 +122,19 @@ export default function EditProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <p className="text-center text-gray-600">Please sign in to edit your profile</p>
-          </div>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-center text-felt-gray">Please sign in to edit your profile</p>
+      </PageShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8 pb-4 border-b border-gray-200">Edit Profile</h1>
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-              <label htmlFor="username" className="block text-sm font-semibold text-gray-800 mb-2">
+    <PageShell>
+          <p className="label-micro text-felt-gray">Account</p>
+          <h1 className="section-whisper mb-[46px] mt-4">Edit Profile</h1>
+          <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
+            <div>
+              <label htmlFor="username" className="field-label">
                 Username
               </label>
               <input
@@ -153,14 +146,14 @@ export default function EditProfilePage() {
                 title="Username must be 3-20 characters long and can only contain letters, numbers, and underscores"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-3 px-4 text-gray-800 placeholder-gray-500"
+                className="input-field"
                 placeholder="Enter your username"
               />
-              <p className="mt-1 text-xs text-gray-500">3-20 characters, letters, numbers, and underscores only.</p>
+              <p className="field-hint">3-20 characters, letters, numbers, and underscores only.</p>
             </div>
 
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-              <label htmlFor="bio" className="block text-sm font-semibold text-gray-800 mb-2">
+            <div>
+              <label htmlFor="bio" className="field-label">
                 Bio
               </label>
               <textarea
@@ -169,13 +162,13 @@ export default function EditProfilePage() {
                 rows={4}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-3 px-4 text-gray-800 placeholder-gray-500"
+                className="textarea-field"
                 placeholder="Tell others a bit about yourself..."
               />
             </div>
 
-            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-              <label htmlFor="photo" className="block text-sm font-semibold text-gray-800 mb-2">
+            <div>
+              <label htmlFor="photo" className="field-label">
                 Profile Photo
               </label>
               <input
@@ -190,23 +183,21 @@ export default function EditProfilePage() {
                   }
                   setFile(file);
                 }}
-                className="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-3 file:px-6 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 py-2 px-3"
+                className="mt-1 block w-full text-[12px] text-inkstone"
               />
-              <p className="mt-1 text-xs text-gray-500">Supported formats: JPG, PNG, GIF, HEIC (will be converted to JPEG)</p>
+              <p className="field-hint">Supported formats: JPG, PNG, GIF, HEIC (will be converted to JPEG)</p>
             </div>
 
-            <div className="flex justify-center mt-8">
+            <div className="mt-8">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300 w-full sm:w-auto shadow-sm transition-all duration-200 hover:shadow-md"
+                className="btn-ghost"
               >
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

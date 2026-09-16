@@ -76,7 +76,7 @@ export default function ChatList() {
   };
 
   return (
-    <div className="divide-y divide-gray-200">
+    <div>
       {chats.map(chat => {
         const otherUserId = chat.participants.find(id => id !== user.uid);
         const otherUser = otherUserId ? users[otherUserId] : null;
@@ -85,7 +85,7 @@ export default function ChatList() {
           <Link
             key={chat.id}
             href={`/chat/${chat.id}`}
-            className="block hover:bg-gray-50 transition-colors duration-150"
+            className="hairline-bottom block py-4 transition-opacity duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:opacity-70"
           >
             <div className="px-4 py-4 sm:px-6">
               <div className="flex items-center space-x-4">
@@ -93,33 +93,33 @@ export default function ChatList() {
                   <Image
                     src={otherUser?.photoURL || defaultAvatar}
                     alt={otherUser?.displayName || 'User'}
-                    className="rounded-full"
+                    className="avatar"
                     width={40}
                     height={40}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="truncate text-[14px] text-obsidian">
                       {otherUser?.displayName || 'Loading...'}
                     </p>
                     {chat.lastMessage && !chat.lastMessage.readBy.includes(user.uid) && chat.lastMessage.senderId !== user.uid && (
-                      <span className="flex-shrink-0 h-2 w-2 rounded-full bg-blue-600"></span>
+                      <span className="h-2 w-2 flex-shrink-0 bg-obsidian"></span>
                     )}
                   </div>
                   {chat.lastMessage && (
-                    <p className={`text-sm truncate ${!chat.lastMessage.readBy.includes(user.uid) && chat.lastMessage.senderId !== user.uid ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+                    <p className={`truncate text-[14px] ${!chat.lastMessage.readBy.includes(user.uid) && chat.lastMessage.senderId !== user.uid ? 'text-obsidian' : 'text-felt-gray'}`}>
                       {chat.lastMessage.content}
                     </p>
                   )}
                 </div>
                 {chat.lastMessage?.createdAt && (
                   <div className="flex flex-col items-end space-y-1">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-[11px] text-felt-gray">
                       {formatMessageDate(chat.lastMessage.createdAt)}
                     </span>
                     {chat.lastMessage.senderId === user.uid && chat.lastMessage.readBy.length > 1 && (
-                      <span className="text-blue-600">
+                      <span className="text-obsidian">
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
@@ -134,7 +134,7 @@ export default function ChatList() {
       })}
       {chats.length === 0 && (
         <div className="px-4 py-8 text-center">
-          <p className="text-gray-500">No conversations yet</p>
+          <p className="text-felt-gray">No conversations yet</p>
         </div>
       )}
     </div>

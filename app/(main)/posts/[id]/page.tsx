@@ -7,7 +7,7 @@ import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
-import Navigation from '@/components/shared/Navigation';
+import PageShell from '@/components/shared/PageShell';
 import PostActions from '@/components/feed/PostActions';
 import VerificationBadge from '@/components/shared/VerificationBadge';
 import type { Post, UserProfile } from '@/types';
@@ -139,27 +139,19 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-2xl mx-auto p-4">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="animate-pulse">
-              <div className="flex items-center mb-6">
-                <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
-                <div className="ml-4 space-y-2">
-                  <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                  <div className="h-3 w-24 bg-gray-200 rounded"></div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-96 bg-gray-200 rounded"></div>
-              </div>
+      <PageShell>
+        <div className="space-y-4">
+          <div className="flex items-center mb-6">
+            <div className="skeleton h-12 w-12"></div>
+            <div className="ml-4 space-y-2">
+              <div className="skeleton h-4 w-32"></div>
+              <div className="skeleton h-3 w-24"></div>
             </div>
           </div>
+          <div className="skeleton h-4 w-3/4"></div>
+          <div className="skeleton h-96 w-full"></div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -168,99 +160,86 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="max-w-2xl mx-auto p-4">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="p-6">
-            {/* Author info */}
-            <div className="flex items-center mb-6">
-              <div className="h-12 w-12 relative">
+    <PageShell>
+      <div className="flex items-center mb-8">
+        <div className="relative h-12 w-12 overflow-hidden">
+          <Image
+            src={post.authorPhotoURL || '/images/default-avatar.png'}
+            alt={post.authorName}
+            className="avatar"
+            fill
+            sizes="48px"
+          />
+        </div>
+        <div className="ml-4">
+          <h2 className="flex items-center text-[18px] text-obsidian">
+            {post.authorName}
+            {authorVerified && <VerificationBadge />}
+          </h2>
+          <p className="text-[12px] text-felt-gray">
+            {formatDistanceToNow(convertTimestampToDate(post.createdAt), { addSuffix: true })}
+          </p>
+        </div>
+      </div>
+
+      <p className="mb-8 text-[18px] leading-[1.21] text-inkstone">{post.content}</p>
+
+      {post.imageURL && !post.videoURL && (
+        <div className="relative mb-8 h-96 overflow-hidden bg-ash-mist">
+          <Image
+            src={post.imageURL}
+            alt="Post attachment"
+            className="object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
+        </div>
+      )}
+      {post.videoURL && (
+        <div className="relative mb-8 w-full">
+          <video
+            src={post.videoURL}
+            controls
+            className="w-full"
+            style={{ maxHeight: '600px', objectFit: 'contain' }}
+            preload="metadata"
+          />
+        </div>
+      )}
+
+      <PostActions post={post} />
+
+      <div className="hairline-top mt-10 pt-8">
+        <h3 className="mb-6 text-[16px] text-obsidian">Comments</h3>
+        <div className="space-y-6">
+          {post.comments?.map((comment) => (
+            <div key={comment.id} className="flex space-x-4">
+              <div className="relative h-10 w-10 overflow-hidden">
                 <Image
-                  src={post.authorPhotoURL || '/images/default-avatar.png'}
-                  alt={post.authorName}
-                  className="rounded-full"
+                  src={comment.authorPhotoURL || '/images/default-avatar.png'}
+                  alt={comment.authorName}
+                  className="avatar"
                   fill
-                  sizes="48px"
+                  sizes="40px"
                 />
               </div>
-              <div className="ml-4">
-                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                  {post.authorName}
-                  {authorVerified && <VerificationBadge />}
-                </h2>
-                <p className="text-sm text-gray-500">
-                  {formatDistanceToNow(convertTimestampToDate(post.createdAt), { addSuffix: true })}
+              <div className="flex-1">
+                <div className="flex items-center gap-1 mb-1">
+                  <p className="text-[14px] text-obsidian">{comment.authorName}</p>
+                  {commentVerifications[comment.authorId] && <VerificationBadge />}
+                </div>
+                <p className="text-[16px] text-inkstone">{comment.content}</p>
+                <p className="mt-1 text-[11px] text-felt-gray">
+                  {formatDistanceToNow(convertTimestampToDate(comment.createdAt), { addSuffix: true })}
                 </p>
               </div>
             </div>
-
-            {/* Post content */}
-            <p className="text-gray-900 text-lg mb-6">{post.content}</p>
-            
-            {/* Post image if exists */}
-            {post.imageURL && !post.videoURL && (
-              <div className="mb-6 relative h-96">
-                <Image
-                  src={post.imageURL}
-                  alt="Post attachment"
-                  className="rounded-lg object-cover"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 768px"
-                />
-              </div>
-            )}
-            {post.videoURL && (
-              <div className="mb-6 relative w-full">
-                <video
-                  src={post.videoURL}
-                  controls
-                  className="w-full rounded-lg"
-                  style={{ maxHeight: '600px', objectFit: 'contain' }}
-                  preload="metadata"
-                />
-              </div>
-            )}
-
-            <PostActions post={post} />
-          </div>
-
-          {/* Comments section */}
-          <div className="border-t border-gray-200 bg-blue-50 p-6">
-            <h3 className="text-lg font-semibold mb-4">Comments</h3>
-            <div className="space-y-4">
-              {post.comments?.map((comment) => (
-                <div key={comment.id} className="flex space-x-4">
-                  <div className="h-10 w-10 relative">
-                    <Image
-                      src={comment.authorPhotoURL || '/images/default-avatar.png'}
-                      alt={comment.authorName}
-                      className="rounded-full"
-                      fill
-                      sizes="40px"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="bg-white rounded-lg p-4 shadow-sm hover:bg-blue-100 transition-colors">
-                      <div className="flex items-center gap-1 mb-1">
-                        <p className="font-medium text-gray-900">{comment.authorName}</p>
-                        {commentVerifications[comment.authorId] && <VerificationBadge />}
-                      </div>
-                      <p className="text-gray-500">{comment.content}</p>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatDistanceToNow(convertTimestampToDate(comment.createdAt), { addSuffix: true })}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {(!post.comments || post.comments.length === 0) && (
-                <p className="text-gray-500 text-center py-4">No comments yet. Be the first to comment!</p>
-              )}
-            </div>
-          </div>
+          ))}
+          {(!post.comments || post.comments.length === 0) && (
+            <p className="text-felt-gray">No comments yet. Be the first to comment.</p>
+          )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

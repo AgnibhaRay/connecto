@@ -45,14 +45,14 @@ export default function PostActions({ post }: PostActionsProps) {
   return (
     <button
       onClick={handleLike}
-      className="flex items-center space-x-1 text-gray-500 hover:text-blue-500"
+      className="nav-link flex items-center gap-1.5 text-felt-gray hover:text-obsidian"
     >
       {isLiked ? (
-        <LikeSolid className="h-5 w-5 text-blue-500" />
+        <LikeSolid className="h-5 w-5 text-obsidian" />
       ) : (
         <LikeOutline className="h-5 w-5" />
       )}
-      <span>{likesCount}</span>
+      <span className="text-[12px]">{likesCount}</span>
     </button>
   );
 }

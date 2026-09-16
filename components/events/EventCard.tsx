@@ -54,9 +54,9 @@ export default function EventCard({ event }: EventCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-200 hover:scale-[1.02]">
-      <Link href={`/events/${event.id}`}>
-        <div className="relative h-48 w-full">
+    <div className="editorial-row">
+      <Link href={`/events/${event.id}`} className="block">
+        <div className="relative h-64 w-full overflow-hidden bg-ash-mist">
           <Image
             src={event.coverImage || '/images/event-placeholder.jpg'}
             alt={event.title}
@@ -66,66 +66,62 @@ export default function EventCard({ event }: EventCardProps) {
         </div>
       </Link>
 
-      <div className="p-4">
+      <div className="pt-3.5">
         <Link href={`/events/${event.id}`}>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">{event.title}</h3>
+          <h3 className="mb-2 text-[18px] text-obsidian">{event.title}</h3>
         </Link>
 
-        <div className="text-sm text-gray-500 space-y-1 mb-4">
+        <div className="mb-6 space-y-1 text-[12px] text-felt-gray">
           <p className="flex items-center">
-            <CalendarIcon className="h-4 w-4 mr-1" />
+            <CalendarIcon className="mr-1 h-4 w-4" />
             {formattedDate} at {formattedTime}
           </p>
           <p className="flex items-center">
-            <LocationIcon className="h-4 w-4 mr-1" />
+            <LocationIcon className="mr-1 h-4 w-4" />
             {event.isOnline ? 'Online Event' : event.location}
           </p>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex -space-x-2">
             {event.attendees
               .filter(a => a.status === 'going')
               .slice(0, 3)
               .map((attendee) => (
-                <div key={attendee.id} className="relative h-8 w-8">
+                <div key={attendee.id} className="relative h-8 w-8 overflow-hidden border border-paper">
                   <Image
                     src={attendee.photoURL || '/images/default-avatar.png'}
                     alt={attendee.name}
                     fill
-                    className="rounded-full border-2 border-white"
+                    className="avatar"
                   />
                 </div>
               ))}
             {event.attendees.filter(a => a.status === 'going').length > 3 && (
-              <div className="relative h-8 w-8 flex items-center justify-center bg-gray-100 rounded-full border-2 border-white">
-                <span className="text-xs text-gray-600">
+              <div className="relative flex h-8 w-8 items-center justify-center border border-obsidian bg-paper">
+                <span className="text-[11px] text-felt-gray">
                   +{event.attendees.filter(a => a.status === 'going').length - 3}
                 </span>
               </div>
             )}
           </div>
 
-          <div className="flex space-x-2">
+          <div className="flex gap-2">
             <button
               onClick={() => handleAttendance('going')}
               disabled={isUpdating}
-              className={`px-3 py-1 rounded text-sm font-medium ${
-                userAttendance?.status === 'going'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              } transition-colors duration-200`}
+              className={`btn-ghost btn-sm ${
+                userAttendance?.status === 'going' ? 'btn-filled border-paper' : ''
+              }`}
             >
               Going
             </button>
             <button
               onClick={() => handleAttendance('interested')}
               disabled={isUpdating}
-              className={`px-3 py-1 rounded text-sm font-medium ${
-                userAttendance?.status === 'interested'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              } transition-colors duration-200`}
+              className={`btn-ghost btn-sm ${
+                userAttendance?.status === 'interested' ? 'btn-filled border-paper' : ''
+              }`}
             >
               Interested
             </button>

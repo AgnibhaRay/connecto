@@ -52,41 +52,29 @@ export default function EventActions({ eventId, attendees }: EventActionsProps) 
   };
 
   if (!user) {
-    return <p className="text-gray-600">Sign in to respond to this event</p>;
+    return <p className="text-felt-gray">Sign in to respond to this event</p>;
   }
 
   return (
-    <div className="flex gap-3">
+    <div className="flex flex-wrap gap-3">
       <button
         onClick={() => handleAttendance('going')}
         disabled={isUpdating}
-        className={`px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
-          userAttendance?.status === 'going'
-            ? 'bg-indigo-600 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-        }`}
+        className={`btn-ghost ${userAttendance?.status === 'going' ? 'btn-filled border-paper' : ''}`}
       >
         Going
       </button>
       <button
         onClick={() => handleAttendance('interested')}
         disabled={isUpdating}
-        className={`px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
-          userAttendance?.status === 'interested'
-            ? 'bg-indigo-600 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-        }`}
+        className={`btn-ghost ${userAttendance?.status === 'interested' ? 'btn-filled border-paper' : ''}`}
       >
         Interested
       </button>
       <button
         onClick={() => handleAttendance('not_going')}
         disabled={isUpdating}
-        className={`px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
-          userAttendance?.status === 'not_going'
-            ? 'bg-indigo-600 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-        }`}
+        className={`btn-ghost ${userAttendance?.status === 'not_going' ? 'btn-filled border-paper' : ''}`}
       >
         Not Going
       </button>

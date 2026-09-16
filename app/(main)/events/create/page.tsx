@@ -7,7 +7,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase/config';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Image from 'next/image';
-import Navigation from '@/components/shared/Navigation';
+import PageShell from '@/components/shared/PageShell';
 import toast from 'react-hot-toast';
 import { processImageFile, isHeicFile } from '@/lib/utils/imageUtils';
 
@@ -152,31 +152,23 @@ export default function CreateEventPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <main className="container mx-auto px-4 py-8">
-        <div 
-          className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6 sm:p-8"
-          style={{
-            animation: 'fadeIn 0.5s ease-out forwards',
-            opacity: 0
-          }}
-        >
-          <h1 className="text-3xl font-bold text-black mb-8">Create Event</h1>
+    <PageShell>
+      <p className="label-micro text-felt-gray">New gathering</p>
+      <h1 className="section-whisper mb-[46px] mt-4">Create Event</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
             {formErrors.submit && (
-              <div className="rounded-md bg-red-50 p-4">
+              <div className="  p-4">
                 <div className="flex">
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-red-800">{formErrors.submit}</p>
+                    <p className="text-sm font-medium text-obsidian">{formErrors.submit}</p>
                   </div>
                 </div>
               </div>
             )}
 
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-black">
+              <label htmlFor="title" className="field-label">
                 Event Title
               </label>
               <input
@@ -184,17 +176,15 @@ export default function CreateEventPage() {
                 name="title"
                 id="title"
                 required
-                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                  formErrors.title ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`input-field ${formErrors.title ? "border-obsidian" : ""}`}
               />
               {formErrors.title && (
-                <p className="mt-1 text-sm text-red-600">{formErrors.title}</p>
+                <p className="mt-1 text-sm text-obsidian">{formErrors.title}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-black">
+              <label htmlFor="description" className="field-label">
                 Description
               </label>
               <textarea
@@ -202,18 +192,16 @@ export default function CreateEventPage() {
                 id="description"
                 rows={4}
                 required
-                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                  formErrors.description ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className="input-field"
               />
               {formErrors.description && (
-                <p className="mt-1 text-sm text-red-600">{formErrors.description}</p>
+                <p className="mt-1 text-sm text-obsidian">{formErrors.description}</p>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-black">
+                <label htmlFor="date" className="field-label">
                   Date
                 </label>
                 <input
@@ -222,17 +210,15 @@ export default function CreateEventPage() {
                   id="date"
                   required
                   min={new Date().toISOString().split('T')[0]}
-                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                    formErrors.date ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className="input-field"
                 />
                 {formErrors.date && (
-                  <p className="mt-1 text-sm text-red-600">{formErrors.date}</p>
+                  <p className="mt-1 text-sm text-obsidian">{formErrors.date}</p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="time" className="block text-sm font-medium text-black">
+                <label htmlFor="time" className="field-label">
                   Time
                 </label>
                 <input
@@ -240,20 +226,20 @@ export default function CreateEventPage() {
                   name="time"
                   id="time"
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="input-field"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-black">
+              <label htmlFor="category" className="field-label">
                 Category
               </label>
               <select
                 name="category"
                 id="category"
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="select-field"
               >
                 <option value="">Select a category</option>
                 <option value="social">Social</option>
@@ -272,15 +258,15 @@ export default function CreateEventPage() {
                   checked={isOnline}
                   onChange={handleIsOnlineChange}
                   value="true"
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  className="h-4 w-4 rounded border-obsidian text-obsidian "
                 />
-                <label htmlFor="isOnline" className="ml-2 block text-sm text-black">
+                <label htmlFor="isOnline" className="ml-2 block text-sm text-obsidian">
                   This is an online event
                 </label>
               </div>
               
               <div className="mt-2">
-                <label htmlFor="location" className="block text-sm font-medium text-black">
+                <label htmlFor="location" className="field-label">
                   Location
                 </label>
                 <input
@@ -289,19 +275,17 @@ export default function CreateEventPage() {
                   id="location"
                   required
                   defaultValue={isOnline ? 'Online' : ''}
-                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                    formErrors.location ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className="input-field"
                   placeholder={isOnline ? 'Online' : 'Enter location'}
                 />
                 {formErrors.location && (
-                  <p className="mt-1 text-sm text-red-600">{formErrors.location}</p>
+                  <p className="mt-1 text-sm text-obsidian">{formErrors.location}</p>
                 )}
               </div>
 
               {isOnline && (
                 <div className="mt-2">
-                  <label htmlFor="meetingLink" className="block text-sm font-medium text-black">
+                  <label htmlFor="meetingLink" className="field-label">
                     Meeting Link
                   </label>
                   <input
@@ -309,21 +293,19 @@ export default function CreateEventPage() {
                     name="meetingLink"
                     id="meetingLink"
                     required
-                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                      formErrors.meetingLink ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                    className="input-field"
                     placeholder="https://..."
                   />
                   {formErrors.meetingLink && (
-                    <p className="mt-1 text-sm text-red-600">{formErrors.meetingLink}</p>
+                    <p className="mt-1 text-sm text-obsidian">{formErrors.meetingLink}</p>
                   )}
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-black">Cover Image</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <label className="field-label">Cover Image</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-obsidian border-dashed ">
                 <div className="space-y-1 text-center">
                   {previewUrl ? (
                     <div className="relative h-32 w-full">
@@ -336,7 +318,7 @@ export default function CreateEventPage() {
                     </div>
                   ) : (
                     <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
+                      className="mx-auto h-12 w-12 text-ash-mist"
                       stroke="currentColor"
                       fill="none"
                       viewBox="0 0 48 48"
@@ -349,8 +331,8 @@ export default function CreateEventPage() {
                       />
                     </svg>
                   )}
-                  <div className="flex text-sm text-gray-600">
-                    <label htmlFor="coverImage" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
+                  <div className="flex text-sm text-felt-gray">
+                    <label htmlFor="coverImage" className="nav-link cursor-pointer text-obsidian">
                       <span>Upload a file</span>
                       <input
                         id="coverImage"
@@ -362,7 +344,7 @@ export default function CreateEventPage() {
                       />
                     </label>
                   </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  <p className="text-xs text-felt-gray">PNG, JPG, GIF up to 10MB</p>
                 </div>
               </div>
             </div>
@@ -371,21 +353,19 @@ export default function CreateEventPage() {
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-black bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                className="btn-ghost"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-ghost"
               >
                 {isSubmitting ? 'Creating...' : 'Create Event'}
               </button>
             </div>
           </form>
-        </div>
-      </main>
-    </div>
+    </PageShell>
   );
 }

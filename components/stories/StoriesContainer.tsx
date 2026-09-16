@@ -299,11 +299,11 @@ export default function StoriesContainer() {
 
   if (loading) {
     return (
-      <div className="flex space-x-4 overflow-x-auto p-4 bg-white rounded-lg shadow mb-4">
+      <div className="flex space-x-4 overflow-x-auto py-2">
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="w-14 h-14 rounded-full bg-gray-200 animate-pulse flex-shrink-0"
+            className="skeleton h-14 w-14 flex-shrink-0"
           />
         ))}
       </div>
@@ -312,7 +312,7 @@ export default function StoriesContainer() {
 
   return (
     <>
-      <div className="flex space-x-4 overflow-x-auto p-4 bg-white rounded-lg shadow mb-4">
+      <div className="flex space-x-4 overflow-x-auto py-2">
         <CreateStory />
         
         {Object.entries(storiesByUser).map(([authorId, { authorName, authorPhotoURL, stories }]) => {
@@ -326,19 +326,19 @@ export default function StoriesContainer() {
               onClick={() => handleStoryClick(authorId)}
               className="relative flex-shrink-0"
             >
-              <div className={`w-14 h-14 rounded-full border-2 overflow-hidden relative ${
-                allStoriesViewed ? 'border-gray-300' : 'border-indigo-500'
+              <div               className={`w-14 h-14 overflow-hidden relative ${
+                allStoriesViewed ? 'border border-ash-mist' : 'border border-obsidian'
               }`}>
                 <Image
                   src={authorPhotoURL || '/images/default-avatar.png'}
                   alt={authorName}
-                  className="rounded-full object-cover w-full h-full"
+                  className="rounded-none object-cover w-full h-full"
                   fill
                   sizes="56px"
                   priority
                 />
               </div>
-              <p className="text-xs text-center mt-1 truncate max-w-[56px] font-medium text-gray-700 hover:text-indigo-600 transition-colors">
+              <p className="mt-1 max-w-[56px] truncate text-center text-[11px] text-felt-gray">
                 {authorId === user?.uid ? 'Your Story' : authorName}
               </p>
             </button>

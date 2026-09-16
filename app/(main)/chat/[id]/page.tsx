@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, onSnapshot, collection, query, orderBy, addDoc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import Navigation from '@/components/shared/Navigation';
+import PageShell from '@/components/shared/PageShell';
 import Image from 'next/image';
 import defaultAvatar from '@/public/images/default-avatar.png';
 import toast from 'react-hot-toast';
@@ -119,14 +119,9 @@ export default function ChatRoomPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <p className="text-center text-gray-600">Please sign in to view messages</p>
-          </div>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-center text-felt-gray">Please sign in to view messages</p>
+      </PageShell>
     );
   }
 
@@ -142,81 +137,75 @@ export default function ChatRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-[calc(100vh-12rem)]">
-          {/* Chat Header */}
-          <div className="p-4 border-b border-gray-200 flex items-center space-x-3">
-            <div className="flex-shrink-0">
-              <Image
-                className="h-10 w-10 rounded-full"
-                src={otherUser?.photoURL || defaultAvatar}
-                alt={otherUser?.displayName || 'User'}
-                width={40}
-                height={40}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-lg font-medium text-gray-900">
-                {otherUser?.displayName || 'Loading...'}
-              </h2>
-            </div>
+    <PageShell>
+      <div className="flex h-[calc(100vh-14rem)] flex-col">
+        <div className="hairline-bottom flex items-center space-x-3 pb-4">
+          <div className="flex-shrink-0 overflow-hidden">
+            <Image
+              className="avatar h-10 w-10"
+              src={otherUser?.photoURL || defaultAvatar}
+              alt={otherUser?.displayName || 'User'}
+              width={40}
+              height={40}
+            />
           </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {loading ? (
-              <div className="text-center text-gray-600">Loading messages...</div>
-            ) : messages.length === 0 ? (
-              <div className="text-center text-gray-600">No messages yet</div>
-            ) : (
-              messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.senderId === user.uid ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                      message.senderId === user.uid
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
-                    }`}
-                  >
-                    <p>{message.text}</p>
-                    <p className={`text-xs mt-1 ${
-                      message.senderId === user.uid ? 'text-indigo-200' : 'text-gray-500'
-                    }`}>
-                      {formatDate(message.timestamp)}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-[18px] text-obsidian">
+              {otherUser?.displayName || 'Loading...'}
+            </h2>
           </div>
-
-          {/* Message Input */}
-          <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200">
-            <div className="flex space-x-3">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-md sm:text-sm border-gray-300"
-              />
-              <button
-                type="submit"
-                disabled={!newMessage.trim()}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Send
-              </button>
-            </div>
-          </form>
         </div>
+
+        <div className="flex-1 space-y-4 overflow-y-auto py-6">
+          {loading ? (
+            <div className="text-felt-gray">Loading messages...</div>
+          ) : messages.length === 0 ? (
+            <div className="text-felt-gray">No messages yet</div>
+          ) : (
+            messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.senderId === user.uid ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[70%] px-4 py-2 ${
+                    message.senderId === user.uid
+                      ? 'bg-obsidian text-paper'
+                      : 'border border-obsidian text-obsidian'
+                  }`}
+                >
+                  <p className="text-[16px]">{message.text}</p>
+                  <p className={`mt-1 text-[11px] ${
+                    message.senderId === user.uid ? 'text-ash-mist' : 'text-felt-gray'
+                  }`}>
+                    {formatDate(message.timestamp)}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        <form onSubmit={handleSendMessage} className="hairline-top pt-4">
+          <div className="flex space-x-3">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="input-field flex-1"
+            />
+            <button
+              type="submit"
+              disabled={!newMessage.trim()}
+              className="btn-ghost"
+            >
+              Send
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+    </PageShell>
   );
 }

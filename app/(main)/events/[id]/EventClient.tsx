@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import EventActions from '@/components/events/EventActions';
 import { useEffect, useState } from 'react';
 import { Event } from '@/types';
+import PageShell from '@/components/shared/PageShell';
 
 async function getEvent(id: string) {
   const eventRef = doc(db, 'events', id);
@@ -56,16 +57,14 @@ export default function EventClient({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="animate-pulse">
-            <div className="h-96 w-full bg-gray-200 mb-8"></div>
-            <div className="h-8 w-3/4 bg-gray-200 mb-4"></div>
-            <div className="h-4 w-1/2 bg-gray-200 mb-8"></div>
-            <div className="h-20 w-full bg-gray-200"></div>
-          </div>
+      <PageShell>
+        <div className="space-y-6">
+          <div className="skeleton h-96 w-full"></div>
+          <div className="skeleton h-8 w-3/4"></div>
+          <div className="skeleton h-4 w-1/2"></div>
+          <div className="skeleton h-20 w-full"></div>
         </div>
-      </div>
+      </PageShell>
     );
   }
   
@@ -77,92 +76,89 @@ export default function EventClient({ id }: { id: string }) {
   const formattedTime = format(new Date(`${event.date}T${event.time}`), 'h:mm a');
   
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="relative h-96 w-full">
-          <Image
-            src={event.coverImage || '/images/event-placeholder.jpg'}
-            alt={event.title}
-            fill
-            className="object-cover"
-          />
+    <PageShell>
+      <div className="relative mb-8 h-96 w-full overflow-hidden bg-ash-mist">
+        <Image
+          src={event.coverImage || '/images/event-placeholder.jpg'}
+          alt={event.title}
+          fill
+          className="object-cover"
+        />
+      </div>
+
+      <p className="label-micro text-felt-gray">Event</p>
+      <h1 className="section-whisper mt-4 mb-8">{event.title}</h1>
+
+      <div className="mb-8 flex flex-col space-y-4">
+        <div className="flex items-center text-inkstone">
+          <CalendarIcon className="mr-2 h-5 w-5" />
+          <span>{formattedDate} at {formattedTime}</span>
         </div>
-        
-        <div className="p-8">
-          <h1 className="text-3xl font-bold text-black mb-4">{event.title}</h1>
-          
-          <div className="flex flex-col space-y-4 mb-8">
-            <div className="flex items-center text-black">
-              <CalendarIcon className="h-5 w-5 mr-2" />
-              <span>{formattedDate} at {formattedTime}</span>
-            </div>
-            
-            <div className="flex items-center text-black">
-              <LocationIcon className="h-5 w-5 mr-2" />
-              {event.isOnline ? (
-                <div>
-                  <span className="block">Online Event</span>
-                  {event.meetingLink && (
-                    <a 
-                      href={event.meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm"
-                    >
-                      Join Meeting
-                    </a>
-                  )}
-                </div>
-              ) : (
-                <span>{event.location}</span>
+
+        <div className="flex items-center text-inkstone">
+          <LocationIcon className="mr-2 h-5 w-5" />
+          {event.isOnline ? (
+            <div>
+              <span className="block">Online Event</span>
+              {event.meetingLink && (
+                <a
+                  href={event.meetingLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-link text-obsidian"
+                >
+                  Join Meeting
+                </a>
               )}
             </div>
-          </div>
-
-          <div className="mb-8">
-            <EventActions eventId={event.id} attendees={event.attendees} />
-          </div>
-          
-          <div className="prose max-w-none mb-8">
-            <h2 className="text-xl font-semibold mb-2 text-black">About this event</h2>
-            <p className="whitespace-pre-wrap text-black">{event.description}</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-black">Organizer</h2>
-            <div className="flex items-center">
-              <Image
-                src={event.organizer.photoURL || '/images/default-avatar.png'}
-                alt={event.organizer.name}
-                width={48}
-                height={48}
-                className="rounded-full"
-              />
-              <span className="ml-3 font-medium text-black">{event.organizer.name}</span>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4 text-black">Attendees</h2>
-            <div className="flex flex-wrap gap-4">
-              {event.attendees
-                .filter(attendee => attendee.status === 'going')
-                .map((attendee) => (
-                  <div key={attendee.id} className="flex items-center">
-                    <Image
-                      src={attendee.photoURL || '/images/default-avatar.png'}
-                      alt={attendee.name}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    <span className="ml-2 text-sm text-black">{attendee.name}</span>
-                  </div>
-                ))}
-            </div>
-          </div>
+          ) : (
+            <span>{event.location}</span>
+          )}
         </div>
       </div>
-    </div>
+
+      <div className="mb-8">
+        <EventActions eventId={event.id} attendees={event.attendees} />
+      </div>
+
+      <div className="mb-8">
+        <h2 className="mb-2 text-[16px] text-obsidian">About this event</h2>
+        <p className="whitespace-pre-wrap text-inkstone">{event.description}</p>
+      </div>
+
+      <div>
+        <h2 className="mb-4 text-[16px] text-obsidian">Organizer</h2>
+        <div className="flex items-center">
+          <Image
+            src={event.organizer.photoURL || '/images/default-avatar.png'}
+            alt={event.organizer.name}
+            width={48}
+            height={48}
+            className="avatar"
+          />
+          <span className="ml-3 text-obsidian">{event.organizer.name}</span>
+        </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="mb-4 text-[16px] text-obsidian">Attendees</h2>
+        <div className="flex flex-wrap gap-4">
+          {event.attendees
+            .filter(attendee => attendee.status === 'going')
+            .map((attendee) => (
+              <div key={attendee.id} className="flex items-center">
+                <Image
+                  src={attendee.photoURL || '/images/default-avatar.png'}
+                  alt={attendee.name}
+                  width={40}
+                  height={40}
+                  className="avatar"
+                />
+                <span className="ml-2 text-[14px] text-obsidian">{attendee.name}</span>
+              </div>
+            ))}
+        </div>
+      </div>
+    </PageShell>
   );
 }

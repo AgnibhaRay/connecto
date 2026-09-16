@@ -18,11 +18,10 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
-  // Return null or a loading state while redirecting
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading...</div>
+      <div className="hero-iridescent flex min-h-screen items-center justify-center">
+        <p className="relative z-10 text-[12px] tracking-[0.2em] text-paper">Loading</p>
       </div>
     );
   }

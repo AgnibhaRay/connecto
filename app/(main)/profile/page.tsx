@@ -3,18 +3,18 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '@/lib/firebase/config';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { doc, getDoc, query, collection, where, orderBy, getDocs, onSnapshot } from 'firebase/firestore';
-import Navigation from '@/components/shared/Navigation';
-import PostCard from '@/components/feed/PostCard';
 import FollowButton from '@/components/profile/FollowButton';
 import StartChat from '@/components/chat/StartChat';
+import PageShell from '@/components/shared/PageShell';
+import PostCard from '@/components/feed/PostCard';
 import { Post, UserProfile } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import VerificationBadge from '@/components/shared/VerificationBadge';
 import VerificationControls from '@/components/admin/VerificationControls';
 import Image from 'next/image';
+import UserListModal from '@/components/profile/UserListModal';
 
 // Create a ProfileContent component that uses useSearchParams
 function ProfileContent() {
@@ -25,10 +25,13 @@ function ProfileContent() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+  const [followers, setFollowers] = useState<UserProfile[]>([]);
+  const [following, setFollowing] = useState<UserProfile[]>([]);
   const searchParams = useSearchParams();
   const username = searchParams.get('username');
 
-// Rest of the ProfileContent component
   // Subscribe to real-time user data updates
   useEffect(() => {
     if (!user) return;
@@ -42,7 +45,7 @@ function ProfileContent() {
         unsubscribe = onSnapshot(currentUserRef, (snapshot) => {
           if (snapshot.exists()) {
             const userData = snapshot.data() as UserProfile;
-            setProfileUser(userData);
+            setProfileUser({ ...userData, uid: snapshot.id });
             setFollowerCount(userData.followers?.length || 0);
             setFollowingCount(userData.following?.length || 0);
           }
@@ -63,7 +66,7 @@ function ProfileContent() {
         unsubscribe = onSnapshot(targetUserRef, (snapshot) => {
           if (snapshot.exists()) {
             const userData = snapshot.data() as UserProfile;
-            setProfileUser(userData);
+            setProfileUser({ ...userData, uid: snapshot.id });
             setFollowerCount(userData.followers?.length || 0);
             setFollowingCount(userData.following?.length || 0);
 
@@ -110,63 +113,79 @@ function ProfileContent() {
     fetchPosts();
   }, [profileUser]);
 
+  // Fetch followers and following
+  const fetchUserList = async (userIds: string[]) => {
+    const users: UserProfile[] = [];
+    for (const uid of userIds) {
+      const userDoc = await getDoc(doc(db, 'users', uid));
+      if (userDoc.exists()) {
+        users.push({ ...userDoc.data(), uid: userDoc.id } as UserProfile);
+      }
+    }
+    return users;
+  };
+
+  // Handle opening followers modal
+  const handleShowFollowers = async () => {
+    if (profileUser?.followers?.length) {
+      const followersList = await fetchUserList(profileUser.followers);
+      setFollowers(followersList);
+      setShowFollowers(true);
+    }
+  };
+
+  // Handle opening following modal
+  const handleShowFollowing = async () => {
+    if (profileUser?.following?.length) {
+      const followingList = await fetchUserList(profileUser.following);
+      setFollowing(followingList);
+      setShowFollowing(true);
+    }
+  };
+
+  const isOwnProfile = !username || profileUser?.uid === user?.uid;
+
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-            <p className="text-center text-gray-600">Please sign in to view profiles</p>
-          </div>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-center text-felt-gray">Please sign in to view profiles</p>
+      </PageShell>
     );
   }
 
   if (!profileUser) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-            <p className="text-center text-gray-600">User not found</p>
-          </div>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-center text-felt-gray">User not found</p>
+      </PageShell>
     );
   }
 
-  const isOwnProfile = !username || profileUser.uid === user.uid;
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+    <PageShell>
+      <div>
+        <div className="mb-[46px]">
+          <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-start">
+            <div className="flex flex-col items-start gap-8 sm:flex-row">
               <Image
                 src={profileUser.photoURL || '/images/default-avatar.png'}
                 alt={profileUser.displayName || 'Profile'}
                 width={96}
                 height={96}
-                className="h-24 w-24 rounded-full border-4 border-gray-100 mx-auto sm:mx-0"
+                className="avatar h-24 w-24"
               />
-              <div className="text-center sm:text-left">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <div>
+                <p className="label-micro text-felt-gray">Profile</p>
+                <h1 className="section-whisper mt-3 flex items-center gap-2">
                   {profileUser.displayName}
                   {profileUser.isVerified && <VerificationBadge />}
                 </h1>
-                <p className="text-base sm:text-lg text-gray-600 mt-1 flex items-center gap-2">
+                <p className="mt-3 flex items-center gap-2 text-[16px] text-felt-gray">
                   @{profileUser.username}
-                  {profileUser.isAdmin && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                      Admin
-                    </span>
-                  )}
+                  {profileUser.isAdmin && <span className="tag-pill">Admin</span>}
                 </p>
                 {!isOwnProfile && (
-                  <div className="mt-2 flex gap-2">
+                  <div className="mt-6 flex gap-3">
                     <FollowButton
                       targetUserId={profileUser.uid}
                       initialIsFollowing={isFollowing}
@@ -179,10 +198,7 @@ function ProfileContent() {
             </div>
             <div className="flex flex-col gap-2">
               {isOwnProfile ? (
-                <Link
-                  href="/profile/edit"
-                  className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
+                <Link href="/profile/edit" className="btn-ghost">
                   Edit Profile
                 </Link>
               ) : user?.uid && (
@@ -191,51 +207,58 @@ function ProfileContent() {
             </div>
           </div>
 
-          <div className="flex space-x-6 text-center border-t border-gray-200 pt-6">
-            <div>
-              <span className="block text-2xl font-bold text-gray-900">{followerCount}</span>
-              <span className="block text-sm text-gray-500">Followers</span>
-            </div>
-            <div>
-              <span className="block text-2xl font-bold text-gray-900">{followingCount}</span>
-              <span className="block text-sm text-gray-500">Following</span>
-            </div>
+          <div className="mt-10 flex gap-10 hairline-top pt-8">
+            <button onClick={handleShowFollowers} className="text-left">
+              <span className="block text-[29px] font-light text-obsidian">{followerCount}</span>
+              <span className="label-micro text-felt-gray">Followers</span>
+            </button>
+            <button onClick={handleShowFollowing} className="text-left">
+              <span className="block text-[29px] font-light text-obsidian">{followingCount}</span>
+              <span className="label-micro text-felt-gray">Following</span>
+            </button>
           </div>
-          
+
           {profileUser.bio && (
-            <div className="mt-6 border-t border-gray-200 pt-6">
-              <p className="text-gray-600">{profileUser.bio}</p>
-            </div>
+            <p className="mt-8 max-w-xl text-[18px] leading-[1.21] text-inkstone">{profileUser.bio}</p>
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+        <div>
+          <h2 className="mb-[46px] text-[16px] text-obsidian">
             {isOwnProfile ? 'Your Posts' : `${profileUser.displayName}'s Posts`}
           </h2>
 
           {loading ? (
-            <div className="text-center py-6 sm:py-8">
-              <p className="text-gray-600">Loading posts...</p>
-            </div>
+            <p className="text-felt-gray">Loading posts...</p>
           ) : posts.length === 0 ? (
-            <div className="text-center py-6 sm:py-8">
-              <p className="text-gray-600">
-                {isOwnProfile 
-                  ? "You haven't created any posts yet."
-                  : "This user hasn't created any posts yet."}
-              </p>
-            </div>
+            <p className="text-felt-gray">
+              {isOwnProfile
+                ? "You haven't created any posts yet."
+                : "This user hasn't created any posts yet."}
+            </p>
           ) : (
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-[46px]">
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
             </div>
           )}
         </div>
+
+        <UserListModal
+          isOpen={showFollowers}
+          title="Followers"
+          users={followers}
+          onClose={() => setShowFollowers(false)}
+        />
+        <UserListModal
+          isOpen={showFollowing}
+          title="Following"
+          users={following}
+          onClose={() => setShowFollowing(false)}
+        />
       </div>
-    </div>
+    </PageShell>
   );
 }
 
@@ -243,26 +266,17 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="animate-pulse">
-              <div className="flex items-center mb-6">
-                <div className="h-24 w-24 bg-gray-200 rounded-full"></div>
-                <div className="ml-4 space-y-2">
-                  <div className="h-6 w-40 bg-gray-200 rounded"></div>
-                  <div className="h-4 w-24 bg-gray-200 rounded"></div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              </div>
+      <PageShell>
+        <div className="animate-pulse space-y-6">
+          <div className="flex items-center gap-8">
+            <div className="skeleton h-24 w-24"></div>
+            <div className="space-y-2">
+              <div className="skeleton h-8 w-40"></div>
+              <div className="skeleton h-4 w-24"></div>
             </div>
           </div>
         </div>
-      </div>
+      </PageShell>
     }>
       <ProfileContent />
     </Suspense>

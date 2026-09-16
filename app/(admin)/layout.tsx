@@ -6,7 +6,7 @@ import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { redirect } from 'next/navigation';
 import { UserProfile } from '@/types';
-import Navigation from '@/components/shared/Navigation';
+import PageShell from '@/components/shared/PageShell';
 
 export default function AdminLayout({
   children,
@@ -41,27 +41,19 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <p className="text-center text-gray-600">Loading...</p>
-          </div>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-center text-felt-gray">Loading...</p>
+      </PageShell>
     );
   }
 
   if (!isAdmin) {
-    return null; // Will redirect in useEffect
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </div>
-    </div>
+    <PageShell>
+      {children}
+    </PageShell>
   );
 }

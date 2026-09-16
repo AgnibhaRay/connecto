@@ -41,37 +41,37 @@ export default function Comments({ comments, maxDisplay }: CommentsProps) {
   const visibleComments = showAll ? displayComments : displayComments.slice(0, maxDisplay || displayComments.length);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {visibleComments.map((comment) => (
         <div key={comment.id} className="flex space-x-3">
-          <div className="flex-shrink-0 w-8 h-8 relative">
+          <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden">
             <Image
               src={comment.authorPhotoURL || '/images/default-avatar.png'}
               alt={comment.authorName}
-              className="rounded-full"
+              className="avatar"
               fill
               sizes="32px"
             />
           </div>
           <div className="flex-grow">
-            <div className="bg-blue-50 rounded-lg p-3">
-              <div className="flex items-center mb-1">
-                <span className="font-medium text-gray-900">{comment.authorName}</span>
+            <div className="py-1">
+              <div className="mb-1 flex items-center">
+                <span className="text-[14px] text-obsidian">{comment.authorName}</span>
                 {comment.isVerified && <VerificationBadge />}
               </div>
-              <p className="text-gray-700 text-sm">{comment.content}</p>
+              <p className="text-[14px] leading-[1.21] text-inkstone">{comment.content}</p>
             </div>
-            <span className="text-xs text-gray-500 mt-1">
+            <span className="mt-1 text-[11px] text-felt-gray">
               {formatDistanceToNow(comment.createdAt instanceof Timestamp ? comment.createdAt.toDate() : new Date(comment.createdAt), { addSuffix: true })}
             </span>
           </div>
         </div>
       ))}
-      
+
       {comments.length > (maxDisplay || 0) && !showAll && (
         <button
           onClick={() => setShowAll(true)}
-          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+          className="nav-link text-felt-gray"
         >
           View all {comments.length} comments
         </button>

@@ -88,48 +88,48 @@ export default function ContentModerationPage() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <p className="text-center text-gray-600">Loading reported content...</p>
+      <div className="">
+        <p className="text-center text-felt-gray">Loading reported content...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="">
       <div className="px-4 py-5 sm:px-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900">Content Moderation</h3>
-        <p className="mt-1 max-w-2xl text-sm text-gray-500">Review and manage reported content</p>
+        <h3 className="section-whisper">Moderation.</h3>
+        <p className="mt-4 max-w-2xl text-[16px] text-felt-gray">Review and manage reported content</p>
       </div>
 
-      <div className="border-t border-gray-200">
+      <div className="border-t border-obsidian/15">
         {reportedContent.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">
+          <div className="p-6 text-center text-felt-gray">
             No content has been reported
           </div>
         ) : (
           <div className="flow-root">
-            <ul className="divide-y divide-gray-200">
+            <ul className="divide-y divide-obsidian/15">
               {reportedContent.map((report) => (
                 <li key={report.id} className="p-4">
                   <div className="flex items-start space-x-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className="text-sm font-medium text-obsidian">
                           {report.type === 'post' ? 'Post' : 'Story'} by {(report.content as Post | Story).authorName}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-felt-gray">
                           {new Date(report.createdAt).toLocaleDateString()}
                         </p>
                       </div>
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="mt-1 text-sm text-felt-gray">
                         Reason: {report.reason}
                       </p>
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-felt-gray">
                         Reported by {report.reportedBy.length} user{report.reportedBy.length !== 1 ? 's' : ''}
                       </p>
                       
                       {report.type === 'post' && (
-                        <div className="mt-2 text-sm text-gray-700">
+                        <div className="mt-2 text-sm text-inkstone">
                           <p>{(report.content as Post).content}</p>
                           {(report.content as Post).imageURL && (
                             <div className="mt-2">
@@ -138,7 +138,7 @@ export default function ContentModerationPage() {
                                 alt="Post image"
                                 width={200}
                                 height={200}
-                                className="rounded-lg"
+                                className=""
                               />
                             </div>
                           )}
@@ -149,13 +149,13 @@ export default function ContentModerationPage() {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleContentAction(report.id, 'approve')}
-                        className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        className="btn-ghost btn-sm"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => handleContentAction(report.id, 'remove')}
-                        className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        className="btn-ghost btn-sm"
                       >
                         Remove
                       </button>

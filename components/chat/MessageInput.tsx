@@ -51,20 +51,20 @@ export default function MessageInput({ chatId, senderId }: MessageInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center space-x-2 p-4 border-t bg-white">
+    <form onSubmit={handleSubmit} className="flex items-center space-x-2 p-4 hairline-top bg-paper">
       <input
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message..."
-        className="flex-1 rounded-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="input-field flex-1"
         maxLength={1000}
         disabled={isSending}
       />
       <button
         type="submit"
         disabled={!message.trim() || isSending}
-        className="px-4 py-2 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        className="btn-ghost disabled:opacity-40"
       >
         {isSending ? 'Sending...' : 'Send'}
       </button>

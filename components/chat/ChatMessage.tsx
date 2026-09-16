@@ -37,29 +37,29 @@ export default function ChatMessage({ message, senderPhotoURL }: ChatMessageProp
         <Image
           src={senderPhotoURL || '/images/default-avatar.png'}
           alt="User avatar"
-          className="rounded-full"
+          className="avatar"
           fill
           sizes="32px"
         />
       </div>
       <div className="flex flex-col">
-        <div className={`max-w-[70%] ${isOwnMessage ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'} rounded-2xl px-4 py-2`}>
+        <div className={`max-w-[70%] px-4 py-2 ${isOwnMessage ? 'bg-obsidian text-paper' : 'border border-obsidian text-obsidian'}`}>
           <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
         </div>
         <div className={`flex items-center mt-1 space-x-1 text-xs ${isOwnMessage ? 'justify-end' : ''}`}>
-          <span className="text-gray-500">
+          <span className="text-felt-gray">
             {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
           </span>
           {isOwnMessage && (
             <div className="flex items-center">
               {message.readBy.length > 0 ? (
-                <div className="flex items-center text-blue-500">
+                <div className="flex items-center text-obsidian">
                   <CheckIcon className="h-3 w-3" />
                   <CheckIcon className="h-3 w-3 -ml-1" />
-                  <span className="ml-1 text-xs text-gray-500">Read</span>
+                  <span className="ml-1 text-xs text-felt-gray">Read</span>
                 </div>
               ) : (
-                <div className="flex items-center text-gray-400">
+                <div className="flex items-center text-ash-mist">
                   <CheckIcon className="h-3 w-3" />
                   <CheckIcon className="h-3 w-3 -ml-1" />
                 </div>

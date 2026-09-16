@@ -5,7 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '@/lib/firebase/config';
 import { collection, query, where, orderBy, onSnapshot, getDoc, Timestamp } from 'firebase/firestore';
 import { doc } from 'firebase/firestore';
-import Navigation from '@/components/shared/Navigation';
+import PageShell from '@/components/shared/PageShell';
 import Link from 'next/link';
 import Image from 'next/image';
 import defaultAvatar from '@/public/images/default-avatar.png';
@@ -78,14 +78,9 @@ export default function ChatPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <Navigation />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <p className="text-center text-gray-600">Please sign in to view your messages</p>
-          </div>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-center text-felt-gray">Please sign in to view your messages</p>
+      </PageShell>
     );
   }
 
@@ -101,70 +96,60 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="p-4 border-b border-gray-200">
-            <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
-          </div>
-          
-          {loading ? (
-            <div className="p-4 text-center text-gray-600">
-              Loading conversations...
-            </div>
-          ) : chats.length === 0 ? (
-            <div className="p-4 text-center text-gray-600">
-              <p>No messages yet</p>
-              <p className="text-sm mt-2">
-                Start a conversation by visiting someone&apos;s profile
-              </p>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {chats.map((chat) => {
-                const otherParticipantId = chat.participants.find(id => id !== user.uid);
-                const otherParticipant = otherParticipantId ? participants[otherParticipantId] : null;
+    <PageShell>
+      <p className="label-micro text-felt-gray">Inbox</p>
+      <h1 className="section-whisper mt-4 mb-[46px]">Messages.</h1>
 
-                return (
-                  <Link
-                    key={chat.id}
-                    href={`/chat/${chat.id}`}
-                    className="block hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <div className="p-4 sm:px-6">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex-shrink-0">
-                          <Image
-                            className="h-12 w-12 rounded-full"
-                            src={otherParticipant?.photoURL || defaultAvatar}
-                            alt={otherParticipant?.displayName || 'User'}
-                            width={48}
-                            height={48}
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-900">
-                            {otherParticipant?.displayName || 'Loading...'}
-                          </p>
-                          <p className="text-sm text-gray-500 truncate">
-                            {chat.lastMessage?.text || 'No messages yet'}
-                          </p>
-                        </div>
-                        {chat.lastMessage?.timestamp && (
-                          <div className="text-xs text-gray-500">
-                            {formatDate(chat.lastMessage.timestamp)}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+      {loading ? (
+        <p className="text-felt-gray">Loading conversations...</p>
+      ) : chats.length === 0 ? (
+        <div className="text-felt-gray">
+          <p>No messages yet</p>
+          <p className="mt-2 text-[16px]">
+            Start a conversation by visiting someone&apos;s profile
+          </p>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="space-y-0">
+          {chats.map((chat) => {
+            const otherParticipantId = chat.participants.find(id => id !== user.uid);
+            const otherParticipant = otherParticipantId ? participants[otherParticipantId] : null;
+
+            return (
+              <Link
+                key={chat.id}
+                href={`/chat/${chat.id}`}
+                className="hairline-bottom block py-5 transition-[letter-spacing] duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:opacity-70"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 overflow-hidden">
+                    <Image
+                      className="avatar h-12 w-12"
+                      src={otherParticipant?.photoURL || defaultAvatar}
+                      alt={otherParticipant?.displayName || 'User'}
+                      width={48}
+                      height={48}
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[16px] text-obsidian">
+                      {otherParticipant?.displayName || 'Loading...'}
+                    </p>
+                    <p className="truncate text-[14px] text-felt-gray">
+                      {chat.lastMessage?.text || 'No messages yet'}
+                    </p>
+                  </div>
+                  {chat.lastMessage?.timestamp && (
+                    <div className="text-[11px] text-felt-gray">
+                      {formatDate(chat.lastMessage.timestamp)}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </PageShell>
   );
 }

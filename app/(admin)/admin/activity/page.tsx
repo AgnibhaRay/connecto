@@ -112,40 +112,40 @@ export default function ActivityLogPage() {
     switch (action) {
       case 'user_verified':
       case 'user_admin_updated':
-        return 'text-indigo-600';
+        return 'text-obsidian';
       case 'content_reported':
-        return 'text-red-600';
+        return 'text-obsidian';
       case 'content_moderated':
-        return 'text-orange-600';
+        return 'text-felt-gray';
       default:
-        return 'text-gray-500';
+        return 'text-felt-gray';
     }
   };
 
   if (loading && activityLogs.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <p className="text-center text-gray-600">Loading activity logs...</p>
+      <div className="">
+        <p className="text-center text-felt-gray">Loading activity logs...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="">
       <div className="px-4 py-5 sm:px-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900">Activity Logs</h3>
-        <p className="mt-1 max-w-2xl text-sm text-gray-500">Monitor user and system activity in real-time</p>
+        <h3 className="section-whisper">Activity.</h3>
+        <p className="mt-4 max-w-2xl text-[16px] text-felt-gray">Monitor user and system activity in real-time</p>
       </div>
 
-      <div className="border-t border-gray-200">
+      <div className="border-t border-obsidian/15">
         <div className="flow-root">
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-obsidian/15">
             {activityLogs.map((log) => (
-              <li key={log.id} className="p-4 hover:bg-gray-50">
+              <li key={log.id} className="p-4 hover:">
                 <div className="flex items-center justify-between space-x-4">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
-                      <Link href={`/profile?username=${log.userName}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-900">
+                      <Link href={`/profile?username=${log.userName}`} className="text-sm font-medium nav-link text-obsidian">
                         {log.userName}
                       </Link>
                       <span className={`text-sm ${getActionColor(log.action)}`}>
@@ -153,12 +153,12 @@ export default function ActivityLogPage() {
                       </span>
                     </div>
                     {log.targetId && (
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-felt-gray">
                         Target ID: {log.targetId}
                       </p>
                     )}
                   </div>
-                  <time className="text-sm text-gray-500 whitespace-nowrap">
+                  <time className="text-sm text-felt-gray whitespace-nowrap">
                     {formatDistanceToNow(log.timestamp?.toDate() || new Date(), { addSuffix: true })}
                   </time>
                 </div>
@@ -168,11 +168,11 @@ export default function ActivityLogPage() {
         </div>
 
         {lastDoc && (
-          <div className="px-4 py-4 sm:px-6 border-t border-gray-200">
+          <div className="px-4 py-4 sm:px-6 border-t border-obsidian/15">
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="w-full text-center text-sm text-indigo-600 hover:text-indigo-900 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full text-center text-sm nav-link text-obsidian font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loadingMore ? 'Loading...' : 'Load More'}
             </button>

@@ -172,9 +172,9 @@ export default function CreateStory() {
     <div className="relative group">
       <button
         onClick={() => fileInputRef.current?.click()}
-        className="w-14 h-14 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center hover:border-indigo-500 transition-colors"
+        className="w-14 h-14 border border-dashed border-obsidian flex items-center justify-center transition-[letter-spacing,border-color] duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:border-pewter"
       >
-        <PlusIcon className="h-6 w-6 text-gray-500 group-hover:text-indigo-500" />
+        <PlusIcon className="h-6 w-6 text-obsidian" />
       </button>
       <input
         type="file"
@@ -187,13 +187,13 @@ export default function CreateStory() {
       {/* Preview Modal */}
       {preview && (
         <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-lg w-full p-4">
+          <div className="w-full max-w-lg border border-obsidian bg-paper p-4">
             <div className="space-y-4">
               {selectedFile?.type.startsWith('video/') ? (
-                <video src={preview} controls className="w-full rounded-lg" />
+                <video src={preview} controls className="w-full" />
               ) : (
                 <div className="flex justify-center">
-                  <div className={`relative overflow-hidden rounded-lg ${
+                  <div className={`relative overflow-hidden ${
                     imageOrientation === 'portrait' 
                       ? 'max-h-[70vh] w-auto' 
                       : imageOrientation === 'landscape' 
@@ -226,7 +226,7 @@ export default function CreateStory() {
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 placeholder="Add a caption..."
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-100 text-gray-800 placeholder-gray-500 border-gray-300"
+                className="input-field"
                 maxLength={100}
               />
               
@@ -239,14 +239,14 @@ export default function CreateStory() {
                     setCaption('');
                     setImageDimensions(null);
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+                  className="btn-ghost"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={isUploading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50"
+                  className="btn-filled disabled:opacity-50"
                 >
                   {isUploading ? 'Creating...' : 'Share Story'}
                 </button>

@@ -118,34 +118,28 @@ export default function UserManagementDashboard() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <p className="text-center text-gray-600">Loading users...</p>
+      <div className="">
+        <p className="text-center text-felt-gray">Loading users...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="">
       <div className="px-4 py-5 sm:px-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium leading-6 text-gray-900">User Management</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              <h3 className="section-whisper">Users.</h3>
+              <p className="mt-4 max-w-2xl text-[16px] text-felt-gray">
                 Manage user verification and admin status
               </p>
             </div>
-            <div className="flex space-x-4">
-              <Link
-                href="/admin/moderation"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
-              >
+            <div className="flex space-x-3">
+              <Link href="/admin/moderation" className="btn-ghost">
                 Content Moderation
               </Link>
-              <Link
-                href="/admin/activity"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-              >
+              <Link href="/admin/activity" className="btn-ghost">
                 Activity Logs
               </Link>
             </div>
@@ -157,12 +151,12 @@ export default function UserManagementDashboard() {
               <input
                 type="text"
                 placeholder="Search users..."
-                className="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="input-field max-w-xs"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <select
-                className="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="select-field"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -172,7 +166,7 @@ export default function UserManagementDashboard() {
                 <option value="admin">Admins</option>
               </select>
               <select
-                className="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="select-field"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -187,19 +181,19 @@ export default function UserManagementDashboard() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleBulkAction('verify')}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                  className="btn-ghost btn-sm"
                 >
                   Verify Selected
                 </button>
                 <button
                   onClick={() => handleBulkAction('unverify')}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700"
+                  className="btn-ghost btn-sm"
                 >
                   Unverify Selected
                 </button>
                 <button
                   onClick={() => handleBulkAction('suspend')}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+                  className="btn-ghost btn-sm"
                 >
                   Suspend Selected
                 </button>
@@ -209,15 +203,15 @@ export default function UserManagementDashboard() {
         </div>
       </div>
 
-      <div className="border-t border-gray-200">
+      <div className="border-t border-obsidian/15">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-obsidian/15">
+            <thead className="">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="rounded border-obsidian text-obsidian  focus:border-pewter focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     checked={selectedUsers.length === filteredUsers.length}
                     onChange={(e) => {
                       if (e.target.checked) {
@@ -228,33 +222,33 @@ export default function UserManagementDashboard() {
                     }}
                   />
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   User
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   Email
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   Username
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   Join Date
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   Status
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-felt-gray uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-obsidian/15">
               {filteredUsers.map((user) => (
-                <tr key={user.uid} className={user.isSuspended ? 'bg-red-50' : ''}>
+                <tr key={user.uid} className={user.isSuspended ? '' : ''}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
                       type="checkbox"
-                      className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="rounded border-obsidian text-obsidian  focus:border-pewter focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       checked={selectedUsers.includes(user.uid)}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -267,7 +261,7 @@ export default function UserManagementDashboard() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 relative rounded-full overflow-hidden">
+                      <div className="h-10 w-10 relative  overflow-hidden">
                         <Image
                           src={user.photoURL || '/images/default-avatar.png'}
                           alt={user.displayName || ''}
@@ -277,18 +271,18 @@ export default function UserManagementDashboard() {
                         />
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{user.displayName}</div>
+                        <div className="text-sm font-medium text-obsidian">{user.displayName}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.email}</div>
+                    <div className="text-sm text-obsidian">{user.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">@{user.username}</div>
+                    <div className="text-sm text-obsidian">@{user.username}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-obsidian">
                       {user.createdAt && (
                         user.createdAt instanceof Date ? 
                           formatDistanceToNow(user.createdAt, { addSuffix: true }) :
@@ -301,17 +295,17 @@ export default function UserManagementDashboard() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex gap-2">
                       {user.isVerified && (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold  tag-pill">
                           Verified
                         </span>
                       )}
                       {user.isAdmin && (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold  tag-pill">
                           Admin
                         </span>
                       )}
                       {user.isSuspended && (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold  tag-pill">
                           Suspended
                         </span>
                       )}
@@ -321,13 +315,13 @@ export default function UserManagementDashboard() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => toggleUserStatus(user, 'isVerified')}
-                        className="text-indigo-600 hover:text-indigo-900"
+                        className="nav-link text-obsidian"
                       >
                         {user.isVerified ? 'Unverify' : 'Verify'}
                       </button>
                       <button
                         onClick={() => toggleUserStatus(user, 'isAdmin')}
-                        className="text-indigo-600 hover:text-indigo-900 ml-4"
+                        className="nav-link text-obsidian ml-4"
                       >
                         {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
                       </button>

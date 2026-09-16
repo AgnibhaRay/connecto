@@ -75,23 +75,23 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center space-x-2 p-3 border-t">
-      <div className="h-8 w-8 relative flex-shrink-0">
+    <form onSubmit={handleSubmit} className="mt-3 flex items-center gap-2 pt-3">
+      <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden">
         <Image
           src={user.photoURL || '/images/default-avatar.png'}
           alt={user.displayName || ''}
-          className="rounded-full"
+          className="avatar"
           fill
           sizes="32px"
         />
       </div>
-      <div className="flex-1 flex items-center">
+      <div className="flex flex-1 items-center">
         <input
           type="text"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder={isSuspended ? 'Your account is suspended' : 'Add a comment...'}
-          className="w-full bg-blue-50 rounded-full px-4 py-2 text-sm text-black placeholder-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+          className="input-field py-2 text-[14px]"
           aria-label="Comment input"
           maxLength={1000}
           disabled={isSuspended}
@@ -109,10 +109,10 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
       <button
         type="submit"
         disabled={!comment.trim() || isSubmitting || isSuspended}
-        className="text-blue-500 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 hover:bg-blue-100 rounded-full active:bg-blue-200 transition-colors"
+        className="nav-link px-2 text-obsidian disabled:opacity-40"
         aria-label={
-          isSuspended ? "Account suspended" : 
-          isSubmitting ? "Posting comment..." : 
+          isSuspended ? "Account suspended" :
+          isSubmitting ? "Posting comment..." :
           "Post comment"
         }
       >
