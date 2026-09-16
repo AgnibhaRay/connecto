@@ -97,8 +97,8 @@ export default function ContentModerationPage() {
   return (
     <div className="">
       <div className="px-4 py-5 sm:px-6">
-        <h3 className="section-whisper">Moderation.</h3>
-        <p className="mt-4 max-w-2xl text-[16px] text-felt-gray">Review and manage reported content</p>
+        <h3 className="text-[15px] font-semibold">Moderation</h3>
+        <p className="mt-1 max-w-2xl text-[13px] text-graphite">Review and manage reported content</p>
       </div>
 
       <div className="border-t border-obsidian/15">

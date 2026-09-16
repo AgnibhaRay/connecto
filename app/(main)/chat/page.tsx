@@ -78,8 +78,8 @@ export default function ChatPage() {
 
   if (!user) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Please sign in to view your messages</p>
+      <PageShell title="Messages">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Please sign in to view your messages</p>
       </PageShell>
     );
   }
@@ -96,21 +96,18 @@ export default function ChatPage() {
   };
 
   return (
-    <PageShell>
-      <p className="label-micro text-felt-gray">Inbox</p>
-      <h1 className="section-whisper mt-4 mb-[46px]">Messages.</h1>
-
+    <PageShell title="Messages">
       {loading ? (
-        <p className="text-felt-gray">Loading conversations...</p>
+        <p className="px-4 py-8 text-[13px] text-graphite">Loading conversations...</p>
       ) : chats.length === 0 ? (
-        <div className="text-felt-gray">
+        <div className="px-4 py-8 text-[15px] text-graphite">
           <p>No messages yet</p>
-          <p className="mt-2 text-[16px]">
+          <p className="mt-2 text-[13px]">
             Start a conversation by visiting someone&apos;s profile
           </p>
         </div>
       ) : (
-        <div className="space-y-0">
+        <div>
           {chats.map((chat) => {
             const otherParticipantId = chat.participants.find(id => id !== user.uid);
             const otherParticipant = otherParticipantId ? participants[otherParticipantId] : null;
@@ -119,28 +116,28 @@ export default function ChatPage() {
               <Link
                 key={chat.id}
                 href={`/chat/${chat.id}`}
-                className="hairline-bottom block py-5 transition-[letter-spacing] duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:opacity-70"
+                className="block border-b border-concrete px-4 py-3 hover:bg-hover-mist"
               >
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3">
                   <div className="flex-shrink-0 overflow-hidden">
                     <Image
-                      className="avatar h-12 w-12"
+                      className="avatar h-10 w-10"
                       src={otherParticipant?.photoURL || defaultAvatar}
                       alt={otherParticipant?.displayName || 'User'}
-                      width={48}
-                      height={48}
+                      width={40}
+                      height={40}
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[16px] text-obsidian">
+                    <p className="text-[13px] font-semibold text-ink">
                       {otherParticipant?.displayName || 'Loading...'}
                     </p>
-                    <p className="truncate text-[14px] text-felt-gray">
+                    <p className="truncate text-[15px] text-charcoal">
                       {chat.lastMessage?.text || 'No messages yet'}
                     </p>
                   </div>
                   {chat.lastMessage?.timestamp && (
-                    <div className="text-[11px] text-felt-gray">
+                    <div className="text-[12px] font-bold text-graphite">
                       {formatDate(chat.lastMessage.timestamp)}
                     </div>
                   )}

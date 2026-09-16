@@ -122,17 +122,15 @@ export default function EditProfilePage() {
 
   if (!user) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Please sign in to edit your profile</p>
+      <PageShell title="Edit profile">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Please sign in to edit your profile</p>
       </PageShell>
     );
   }
 
   return (
-    <PageShell>
-          <p className="label-micro text-felt-gray">Account</p>
-          <h1 className="section-whisper mb-[46px] mt-4">Edit Profile</h1>
-          <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
+    <PageShell title="Edit profile">
+          <form onSubmit={handleSubmit} className="space-y-6 px-4 py-4">
             <div>
               <label htmlFor="username" className="field-label">
                 Username
@@ -192,7 +190,7 @@ export default function EditProfilePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-ghost"
+                className="btn-login"
               >
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>

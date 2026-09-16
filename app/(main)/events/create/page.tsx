@@ -152,11 +152,8 @@ export default function CreateEventPage() {
   };
 
   return (
-    <PageShell>
-      <p className="label-micro text-felt-gray">New gathering</p>
-      <h1 className="section-whisper mb-[46px] mt-4">Create Event</h1>
-
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+    <PageShell title="New event">
+      <form onSubmit={handleSubmit} className="space-y-5 px-4 py-4">
             {formErrors.submit && (
               <div className="  p-4">
                 <div className="flex">
@@ -305,7 +302,7 @@ export default function CreateEventPage() {
 
             <div>
               <label className="field-label">Cover Image</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-obsidian border-dashed ">
+              <div className="mt-1 flex justify-center rounded-[18px] border border-dashed border-concrete px-6 pb-6 pt-5">
                 <div className="space-y-1 text-center">
                   {previewUrl ? (
                     <div className="relative h-32 w-full">
@@ -360,7 +357,7 @@ export default function CreateEventPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn-ghost"
+                className="btn-login"
               >
                 {isSubmitting ? 'Creating...' : 'Create Event'}
               </button>

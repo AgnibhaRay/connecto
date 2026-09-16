@@ -130,8 +130,8 @@ export default function UserManagementDashboard() {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="section-whisper">Users.</h3>
-              <p className="mt-4 max-w-2xl text-[16px] text-felt-gray">
+              <h3 className="text-[15px] font-semibold">Users</h3>
+              <p className="mt-1 max-w-2xl text-[13px] text-graphite">
                 Manage user verification and admin status
               </p>
             </div>
@@ -261,13 +261,13 @@ export default function UserManagementDashboard() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 relative  overflow-hidden">
+                      <div className="relative h-10 w-10 overflow-hidden rounded-full">
                         <Image
                           src={user.photoURL || '/images/default-avatar.png'}
                           alt={user.displayName || ''}
                           fill
                           sizes="40px"
-                          className="object-cover"
+                          className="avatar object-cover"
                         />
                       </div>
                       <div className="ml-4">

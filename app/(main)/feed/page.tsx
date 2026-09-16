@@ -15,14 +15,14 @@ const StoriesContainer = lazy(() => import('@/components/stories/StoriesContaine
 
 function FeedSkeleton() {
   return (
-    <div className="space-y-[46px]">
-      <div className="flex gap-4 overflow-hidden">
+    <div>
+      <div className="flex gap-3 overflow-hidden border-b border-concrete px-4 py-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="skeleton h-14 w-14 shrink-0" />
+          <div key={i} className="skeleton h-10 w-10 shrink-0 rounded-full" />
         ))}
       </div>
-      <div className="skeleton h-40 w-full" />
-      <div className="skeleton h-72 w-full" />
+      <div className="skeleton mx-4 my-4 h-32 rounded-[18px]" />
+      <div className="skeleton mx-4 h-48 rounded-[18px]" />
     </div>
   );
 }
@@ -30,19 +30,6 @@ function FeedSkeleton() {
 export default function FeedPage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const checkIfMobile = () => {
-        setIsMobile(window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent));
-      };
-
-      checkIfMobile();
-      window.addEventListener('resize', checkIfMobile);
-      return () => window.removeEventListener('resize', checkIfMobile);
-    }
-  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -80,7 +67,7 @@ export default function FeedPage() {
 
   if (loading) {
     return (
-      <PageShell>
+      <PageShell title="Home">
         <FeedSkeleton />
       </PageShell>
     );
@@ -89,29 +76,24 @@ export default function FeedPage() {
   if (!user) return null;
 
   return (
-    <PageShell>
-      <div className={isMobile ? '' : ''}>
-        <p className="label-micro text-felt-gray">Today</p>
-        <h1 className="section-whisper mt-4 mb-[46px]">The feed.</h1>
+    <PageShell title="Home">
+      <div className="border-b border-concrete px-4 py-3">
+        <Suspense fallback={<div className="skeleton h-10 w-full rounded-full" />}>
+          <StoriesContainer />
+        </Suspense>
+      </div>
 
-        <div className="space-y-[46px]">
-          <Suspense fallback={<div className="skeleton h-20 w-full" />}>
-            <StoriesContainer />
-          </Suspense>
+      <Suspense fallback={<div className="skeleton m-4 h-32 rounded-[18px]" />}>
+        <CreatePost />
+      </Suspense>
 
-          <Suspense fallback={<div className="skeleton h-40 w-full" />}>
-            <CreatePost />
-          </Suspense>
-
-          <div className="space-y-[46px]">
-            {posts?.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-            {posts?.length === 0 && (
-              <p className="text-[16px] text-felt-gray">No posts yet. Be the first to post.</p>
-            )}
-          </div>
-        </div>
+      <div>
+        {posts?.map((post) => (
+          <PostCard key={post.id} post={post} />
+        ))}
+        {posts?.length === 0 && (
+          <p className="px-4 py-8 text-[15px] text-graphite">No posts yet. Be the first to post.</p>
+        )}
       </div>
     </PageShell>
   );

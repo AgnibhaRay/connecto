@@ -59,10 +59,10 @@ export default function UserListModal({ isOpen, onClose, title, users }: UserLis
                     <Link
                       key={user.uid}
                       href={`/profile/${user.uid}`}
-                      className="flex items-center p-3 transition-colors duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:bg-obsidian hover:text-paper"
+                      className="flex items-center p-3 hover:bg-hover-mist"
                       onClick={onClose}
                     >
-                      <div className="relative h-10 w-10 flex-shrink-0">
+                      <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
                         <Image
                           src={user.photoURL || '/images/default-avatar.png'}
                           alt={user.displayName || ''}

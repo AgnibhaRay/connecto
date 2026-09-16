@@ -60,21 +60,21 @@ export default function EventActions({ eventId, attendees }: EventActionsProps) 
       <button
         onClick={() => handleAttendance('going')}
         disabled={isUpdating}
-        className={`btn-ghost ${userAttendance?.status === 'going' ? 'btn-filled border-paper' : ''}`}
+        className={`btn-follow ${userAttendance?.status === 'going' ? 'is-active' : ''}`}
       >
         Going
       </button>
       <button
         onClick={() => handleAttendance('interested')}
         disabled={isUpdating}
-        className={`btn-ghost ${userAttendance?.status === 'interested' ? 'btn-filled border-paper' : ''}`}
+        className={`btn-ghost ${userAttendance?.status === 'interested' ? 'btn-login' : ''}`}
       >
         Interested
       </button>
       <button
         onClick={() => handleAttendance('not_going')}
         disabled={isUpdating}
-        className={`btn-ghost ${userAttendance?.status === 'not_going' ? 'btn-filled border-paper' : ''}`}
+        className={`btn-ghost ${userAttendance?.status === 'not_going' ? 'btn-login' : ''}`}
       >
         Not Going
       </button>

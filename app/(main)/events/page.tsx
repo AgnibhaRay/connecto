@@ -36,10 +36,10 @@ export default function EventsPage() {
 
   if (loading) {
     return (
-      <PageShell>
-        <div className="space-y-[46px]">
-          <div className="skeleton h-60 w-full" />
-          <div className="skeleton h-60 w-full" />
+      <PageShell title="Events">
+        <div className="space-y-3 p-4">
+          <div className="skeleton h-48 w-full rounded-[18px]" />
+          <div className="skeleton h-48 w-full rounded-[18px]" />
         </div>
       </PageShell>
     );
@@ -48,22 +48,19 @@ export default function EventsPage() {
   if (!user) return null;
 
   return (
-    <PageShell>
-      <div className="mb-[46px] flex items-end justify-between gap-6">
-        <div>
-          <p className="label-micro text-felt-gray">Gatherings</p>
-          <h1 className="section-whisper mt-4">Events.</h1>
-        </div>
-        <Link href="/events/create" className="btn-ghost shrink-0">
-          Create Event
+    <PageShell title="Events">
+      <div className="flex items-center justify-between border-b border-concrete px-4 py-3">
+        <p className="text-[13px] text-graphite">Upcoming gatherings</p>
+        <Link href="/events/create" className="btn-login">
+          Create
         </Link>
       </div>
-      <div className="space-y-[46px]">
+      <div>
         {events?.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
         {events?.length === 0 && (
-          <p className="text-felt-gray">No events yet. Create one to get started.</p>
+          <p className="px-4 py-8 text-[15px] text-graphite">No events yet. Create one to get started.</p>
         )}
       </div>
     </PageShell>

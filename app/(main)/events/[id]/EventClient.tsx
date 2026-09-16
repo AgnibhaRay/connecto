@@ -57,10 +57,10 @@ export default function EventClient({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <PageShell>
-        <div className="space-y-6">
-          <div className="skeleton h-96 w-full"></div>
-          <div className="skeleton h-8 w-3/4"></div>
+      <PageShell title="Event">
+        <div className="space-y-4 p-4">
+          <div className="skeleton h-48 w-full rounded-[18px]"></div>
+          <div className="skeleton h-5 w-3/4"></div>
           <div className="skeleton h-4 w-1/2"></div>
           <div className="skeleton h-20 w-full"></div>
         </div>
@@ -76,8 +76,8 @@ export default function EventClient({ id }: { id: string }) {
   const formattedTime = format(new Date(`${event.date}T${event.time}`), 'h:mm a');
   
   return (
-    <PageShell>
-      <div className="relative mb-8 h-96 w-full overflow-hidden bg-ash-mist">
+    <PageShell title="Event">
+      <div className="media-frame relative mb-4 h-56 w-full bg-hover-mist">
         <Image
           src={event.coverImage || '/images/event-placeholder.jpg'}
           alt={event.title}
@@ -86,77 +86,78 @@ export default function EventClient({ id }: { id: string }) {
         />
       </div>
 
-      <p className="label-micro text-felt-gray">Event</p>
-      <h1 className="section-whisper mt-4 mb-8">{event.title}</h1>
+      <div className="px-4 pb-8">
+        <h1 className="mb-4 text-[15px] font-semibold text-ink">{event.title}</h1>
 
-      <div className="mb-8 flex flex-col space-y-4">
-        <div className="flex items-center text-inkstone">
-          <CalendarIcon className="mr-2 h-5 w-5" />
-          <span>{formattedDate} at {formattedTime}</span>
-        </div>
+        <div className="mb-4 flex flex-col space-y-3 text-[15px] text-charcoal">
+          <div className="flex items-center">
+            <CalendarIcon className="mr-2 h-5 w-5" />
+            <span>{formattedDate} at {formattedTime}</span>
+          </div>
 
-        <div className="flex items-center text-inkstone">
-          <LocationIcon className="mr-2 h-5 w-5" />
-          {event.isOnline ? (
-            <div>
-              <span className="block">Online Event</span>
-              {event.meetingLink && (
-                <a
-                  href={event.meetingLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="nav-link text-obsidian"
-                >
-                  Join Meeting
-                </a>
-              )}
-            </div>
-          ) : (
-            <span>{event.location}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="mb-8">
-        <EventActions eventId={event.id} attendees={event.attendees} />
-      </div>
-
-      <div className="mb-8">
-        <h2 className="mb-2 text-[16px] text-obsidian">About this event</h2>
-        <p className="whitespace-pre-wrap text-inkstone">{event.description}</p>
-      </div>
-
-      <div>
-        <h2 className="mb-4 text-[16px] text-obsidian">Organizer</h2>
-        <div className="flex items-center">
-          <Image
-            src={event.organizer.photoURL || '/images/default-avatar.png'}
-            alt={event.organizer.name}
-            width={48}
-            height={48}
-            className="avatar"
-          />
-          <span className="ml-3 text-obsidian">{event.organizer.name}</span>
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="mb-4 text-[16px] text-obsidian">Attendees</h2>
-        <div className="flex flex-wrap gap-4">
-          {event.attendees
-            .filter(attendee => attendee.status === 'going')
-            .map((attendee) => (
-              <div key={attendee.id} className="flex items-center">
-                <Image
-                  src={attendee.photoURL || '/images/default-avatar.png'}
-                  alt={attendee.name}
-                  width={40}
-                  height={40}
-                  className="avatar"
-                />
-                <span className="ml-2 text-[14px] text-obsidian">{attendee.name}</span>
+          <div className="flex items-center">
+            <LocationIcon className="mr-2 h-5 w-5" />
+            {event.isOnline ? (
+              <div>
+                <span className="block">Online Event</span>
+                {event.meetingLink && (
+                  <a
+                    href={event.meetingLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[13px] font-semibold text-verified-indigo"
+                  >
+                    Join Meeting
+                  </a>
+                )}
               </div>
-            ))}
+            ) : (
+              <span>{event.location}</span>
+            )}
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <EventActions eventId={event.id} attendees={event.attendees} />
+        </div>
+
+        <div className="mb-6">
+          <h2 className="mb-2 text-[13px] font-semibold text-ink">About this event</h2>
+          <p className="whitespace-pre-wrap text-[15px] text-charcoal">{event.description}</p>
+        </div>
+
+        <div>
+          <h2 className="mb-3 text-[13px] font-semibold text-ink">Organizer</h2>
+          <div className="flex items-center">
+            <Image
+              src={event.organizer.photoURL || '/images/default-avatar.png'}
+              alt={event.organizer.name}
+              width={40}
+              height={40}
+              className="avatar h-10 w-10"
+            />
+            <span className="ml-3 text-[13px] font-semibold text-ink">{event.organizer.name}</span>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <h2 className="mb-3 text-[13px] font-semibold text-ink">Attendees</h2>
+          <div className="flex flex-wrap gap-3">
+            {event.attendees
+              .filter(attendee => attendee.status === 'going')
+              .map((attendee) => (
+                <div key={attendee.id} className="flex items-center">
+                  <Image
+                    src={attendee.photoURL || '/images/default-avatar.png'}
+                    alt={attendee.name}
+                    width={32}
+                    height={32}
+                    className="avatar h-8 w-8"
+                  />
+                  <span className="ml-2 text-[13px] text-ink">{attendee.name}</span>
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </PageShell>

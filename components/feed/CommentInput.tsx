@@ -75,8 +75,8 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 flex items-center gap-2 pt-3">
-      <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden">
+    <form onSubmit={handleSubmit} className="mt-2 flex items-center gap-2 pt-2">
+      <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
         <Image
           src={user.photoURL || '/images/default-avatar.png'}
           alt={user.displayName || ''}
@@ -91,7 +91,7 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder={isSuspended ? 'Your account is suspended' : 'Add a comment...'}
-          className="input-field py-2 text-[14px]"
+          className="input-field py-2 text-[15px]"
           aria-label="Comment input"
           maxLength={1000}
           disabled={isSuspended}
@@ -109,7 +109,7 @@ export default function CommentInput({ postId, onCommentAdded }: CommentInputPro
       <button
         type="submit"
         disabled={!comment.trim() || isSubmitting || isSuspended}
-        className="nav-link px-2 text-obsidian disabled:opacity-40"
+        className="text-[13px] font-semibold text-signal-blue disabled:opacity-40"
         aria-label={
           isSuspended ? "Account suspended" :
           isSubmitting ? "Posting comment..." :

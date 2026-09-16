@@ -79,7 +79,7 @@ export default function SignInForm() {
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="nav-link absolute inset-y-0 right-3 text-[11px] uppercase tracking-[0.12em] text-felt-gray"
+            className="nav-link absolute inset-y-0 right-3 text-[12px] font-bold text-graphite"
             tabIndex={-1}
           >
             {showPassword ? 'Hide' : 'Show'}
@@ -88,7 +88,7 @@ export default function SignInForm() {
       </div>
 
       <div className="flex items-center justify-between">
-        <label htmlFor="remember-me" className="flex items-center gap-2 text-[12px] text-felt-gray">
+        <label htmlFor="remember-me" className="flex items-center gap-2 text-[13px] text-graphite">
           <input id="remember-me" name="remember-me" type="checkbox" />
           Remember me
         </label>
@@ -97,7 +97,7 @@ export default function SignInForm() {
         </a>
       </div>
 
-      <button type="submit" disabled={loading} className="btn-ghost w-full">
+      <button type="submit" disabled={loading} className="btn-login w-full">
         {loading ? 'Signing in...' : 'Sign in'}
       </button>
     </form>

@@ -79,26 +79,23 @@ export default function EditPostClient({ id }: { id: string }) {
 
   if (!user) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Please sign in to edit posts</p>
+      <PageShell title="Edit post">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Please sign in to edit posts</p>
       </PageShell>
     );
   }
 
   if (isLoading) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Loading post...</p>
+      <PageShell title="Edit post">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Loading post...</p>
       </PageShell>
     );
   }
 
   return (
-    <PageShell>
-      <p className="label-micro text-felt-gray">Revise</p>
-      <h1 className="section-whisper mb-[46px] mt-4">Edit Post</h1>
-
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+    <PageShell title="Edit post">
+      <form onSubmit={handleSubmit} className="space-y-5 px-4 py-4">
         <div>
           <label htmlFor="content" className="field-label">
             Content
@@ -165,7 +162,7 @@ export default function EditPostClient({ id }: { id: string }) {
           <button
             type="submit"
             disabled={isSaving || !content.trim()}
-            className="btn-ghost"
+            className="btn-login"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>

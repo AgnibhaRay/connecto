@@ -41,8 +41,8 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Loading...</p>
+      <PageShell title="Admin">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Loading...</p>
       </PageShell>
     );
   }
@@ -52,7 +52,7 @@ export default function AdminLayout({
   }
 
   return (
-    <PageShell>
+    <PageShell title="Admin">
       {children}
     </PageShell>
   );

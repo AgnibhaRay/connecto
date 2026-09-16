@@ -172,7 +172,7 @@ export default function CreateStory() {
     <div className="relative group">
       <button
         onClick={() => fileInputRef.current?.click()}
-        className="w-14 h-14 border border-dashed border-obsidian flex items-center justify-center transition-[letter-spacing,border-color] duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:border-pewter"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-ink hover:bg-hover-mist"
       >
         <PlusIcon className="h-6 w-6 text-obsidian" />
       </button>
@@ -187,7 +187,7 @@ export default function CreateStory() {
       {/* Preview Modal */}
       {preview && (
         <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg border border-obsidian bg-paper p-4">
+          <div className="w-full max-w-lg rounded-[18px] border border-concrete bg-card p-4">
             <div className="space-y-4">
               {selectedFile?.type.startsWith('video/') ? (
                 <video src={preview} controls className="w-full" />
@@ -246,7 +246,7 @@ export default function CreateStory() {
                 <button
                   onClick={handleSubmit}
                   disabled={isUploading}
-                  className="btn-filled disabled:opacity-50"
+                  className="btn-login disabled:opacity-50"
                 >
                   {isUploading ? 'Creating...' : 'Share Story'}
                 </button>

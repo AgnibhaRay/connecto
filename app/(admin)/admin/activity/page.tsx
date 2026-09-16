@@ -133,8 +133,8 @@ export default function ActivityLogPage() {
   return (
     <div className="">
       <div className="px-4 py-5 sm:px-6">
-        <h3 className="section-whisper">Activity.</h3>
-        <p className="mt-4 max-w-2xl text-[16px] text-felt-gray">Monitor user and system activity in real-time</p>
+        <h3 className="text-[15px] font-semibold">Activity</h3>
+        <p className="mt-1 max-w-2xl text-[13px] text-graphite">Monitor user and system activity in real-time</p>
       </div>
 
       <div className="border-t border-obsidian/15">

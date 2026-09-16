@@ -372,7 +372,7 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="btn-ghost w-full"
+          className="btn-login w-full"
         >
           {loading ? (
             <>

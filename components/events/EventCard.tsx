@@ -54,9 +54,9 @@ export default function EventCard({ event }: EventCardProps) {
   };
 
   return (
-    <div className="editorial-row">
+    <div className="post-card">
       <Link href={`/events/${event.id}`} className="block">
-        <div className="relative h-64 w-full overflow-hidden bg-ash-mist">
+        <div className="media-frame relative h-48 w-full bg-hover-mist">
           <Image
             src={event.coverImage || '/images/event-placeholder.jpg'}
             alt={event.title}
@@ -66,12 +66,12 @@ export default function EventCard({ event }: EventCardProps) {
         </div>
       </Link>
 
-      <div className="pt-3.5">
+      <div className="pt-3">
         <Link href={`/events/${event.id}`}>
-          <h3 className="mb-2 text-[18px] text-obsidian">{event.title}</h3>
+          <h3 className="mb-1 text-[15px] font-semibold text-ink">{event.title}</h3>
         </Link>
 
-        <div className="mb-6 space-y-1 text-[12px] text-felt-gray">
+        <div className="mb-3 space-y-1 text-[13px] text-graphite">
           <p className="flex items-center">
             <CalendarIcon className="mr-1 h-4 w-4" />
             {formattedDate} at {formattedTime}
@@ -88,7 +88,7 @@ export default function EventCard({ event }: EventCardProps) {
               .filter(a => a.status === 'going')
               .slice(0, 3)
               .map((attendee) => (
-                <div key={attendee.id} className="relative h-8 w-8 overflow-hidden border border-paper">
+                <div key={attendee.id} className="relative h-8 w-8 overflow-hidden rounded-full border border-card">
                   <Image
                     src={attendee.photoURL || '/images/default-avatar.png'}
                     alt={attendee.name}
@@ -98,8 +98,8 @@ export default function EventCard({ event }: EventCardProps) {
                 </div>
               ))}
             {event.attendees.filter(a => a.status === 'going').length > 3 && (
-              <div className="relative flex h-8 w-8 items-center justify-center border border-obsidian bg-paper">
-                <span className="text-[11px] text-felt-gray">
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-concrete bg-card">
+                <span className="text-[12px] font-bold text-graphite">
                   +{event.attendees.filter(a => a.status === 'going').length - 3}
                 </span>
               </div>
@@ -110,8 +110,8 @@ export default function EventCard({ event }: EventCardProps) {
             <button
               onClick={() => handleAttendance('going')}
               disabled={isUpdating}
-              className={`btn-ghost btn-sm ${
-                userAttendance?.status === 'going' ? 'btn-filled border-paper' : ''
+              className={`btn-follow btn-sm ${
+                userAttendance?.status === 'going' ? 'is-active' : ''
               }`}
             >
               Going
@@ -120,7 +120,7 @@ export default function EventCard({ event }: EventCardProps) {
               onClick={() => handleAttendance('interested')}
               disabled={isUpdating}
               className={`btn-ghost btn-sm ${
-                userAttendance?.status === 'interested' ? 'btn-filled border-paper' : ''
+                userAttendance?.status === 'interested' ? 'btn-login' : ''
               }`}
             >
               Interested

@@ -119,8 +119,8 @@ export default function ChatRoomPage() {
 
   if (!user) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Please sign in to view messages</p>
+      <PageShell title="Messages">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Please sign in to view messages</p>
       </PageShell>
     );
   }
@@ -137,30 +137,30 @@ export default function ChatRoomPage() {
   };
 
   return (
-    <PageShell>
-      <div className="flex h-[calc(100vh-14rem)] flex-col">
-        <div className="hairline-bottom flex items-center space-x-3 pb-4">
+    <PageShell title={otherUser?.displayName || 'Messages'}>
+      <div className="flex h-[calc(100vh-8rem)] flex-col">
+        <div className="flex items-center space-x-3 border-b border-concrete px-4 py-3">
           <div className="flex-shrink-0 overflow-hidden">
             <Image
-              className="avatar h-10 w-10"
+              className="avatar h-8 w-8"
               src={otherUser?.photoURL || defaultAvatar}
               alt={otherUser?.displayName || 'User'}
-              width={40}
-              height={40}
+              width={32}
+              height={32}
             />
           </div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-[18px] text-obsidian">
+            <h2 className="text-[13px] font-semibold text-ink">
               {otherUser?.displayName || 'Loading...'}
             </h2>
           </div>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto py-6">
+        <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
           {loading ? (
-            <div className="text-felt-gray">Loading messages...</div>
+            <div className="text-[13px] text-graphite">Loading messages...</div>
           ) : messages.length === 0 ? (
-            <div className="text-felt-gray">No messages yet</div>
+            <div className="text-[13px] text-graphite">No messages yet</div>
           ) : (
             messages.map((message) => (
               <div
@@ -168,15 +168,15 @@ export default function ChatRoomPage() {
                 className={`flex ${message.senderId === user.uid ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[70%] px-4 py-2 ${
+                  className={`max-w-[70%] rounded-[18px] px-3 py-2 ${
                     message.senderId === user.uid
-                      ? 'bg-obsidian text-paper'
-                      : 'border border-obsidian text-obsidian'
+                      ? 'bg-ink text-card'
+                      : 'border border-concrete bg-hover-mist text-ink'
                   }`}
                 >
-                  <p className="text-[16px]">{message.text}</p>
-                  <p className={`mt-1 text-[11px] ${
-                    message.senderId === user.uid ? 'text-ash-mist' : 'text-felt-gray'
+                  <p className="text-[15px]">{message.text}</p>
+                  <p className={`mt-1 text-[12px] font-bold ${
+                    message.senderId === user.uid ? 'text-concrete' : 'text-graphite'
                   }`}>
                     {formatDate(message.timestamp)}
                   </p>
@@ -187,8 +187,8 @@ export default function ChatRoomPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSendMessage} className="hairline-top pt-4">
-          <div className="flex space-x-3">
+        <form onSubmit={handleSendMessage} className="border-t border-concrete px-4 py-3">
+          <div className="flex space-x-2">
             <input
               type="text"
               value={newMessage}
@@ -199,7 +199,7 @@ export default function ChatRoomPage() {
             <button
               type="submit"
               disabled={!newMessage.trim()}
-              className="btn-ghost"
+              className="btn-login"
             >
               Send
             </button>

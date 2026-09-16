@@ -41,10 +41,10 @@ export default function Comments({ comments, maxDisplay }: CommentsProps) {
   const visibleComments = showAll ? displayComments : displayComments.slice(0, maxDisplay || displayComments.length);
 
   return (
-    <div className="space-y-3.5">
+    <div className="space-y-3">
       {visibleComments.map((comment) => (
-        <div key={comment.id} className="flex space-x-3">
-          <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden">
+        <div key={comment.id} className="flex space-x-2">
+          <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
             <Image
               src={comment.authorPhotoURL || '/images/default-avatar.png'}
               alt={comment.authorName}
@@ -54,16 +54,14 @@ export default function Comments({ comments, maxDisplay }: CommentsProps) {
             />
           </div>
           <div className="flex-grow">
-            <div className="py-1">
-              <div className="mb-1 flex items-center">
-                <span className="text-[14px] text-obsidian">{comment.authorName}</span>
-                {comment.isVerified && <VerificationBadge />}
-              </div>
-              <p className="text-[14px] leading-[1.21] text-inkstone">{comment.content}</p>
+            <div className="mb-0.5 flex items-center gap-1">
+              <span className="text-[13px] font-semibold text-ink">{comment.authorName}</span>
+              {comment.isVerified && <VerificationBadge />}
+              <span className="text-[13px] font-normal text-graphite">
+                · {formatDistanceToNow(comment.createdAt instanceof Timestamp ? comment.createdAt.toDate() : new Date(comment.createdAt), { addSuffix: true })}
+              </span>
             </div>
-            <span className="mt-1 text-[11px] text-felt-gray">
-              {formatDistanceToNow(comment.createdAt instanceof Timestamp ? comment.createdAt.toDate() : new Date(comment.createdAt), { addSuffix: true })}
-            </span>
+            <p className="text-[15px] leading-[1.4] text-ink">{comment.content}</p>
           </div>
         </div>
       ))}
@@ -71,7 +69,7 @@ export default function Comments({ comments, maxDisplay }: CommentsProps) {
       {comments.length > (maxDisplay || 0) && !showAll && (
         <button
           onClick={() => setShowAll(true)}
-          className="nav-link text-felt-gray"
+          className="text-[13px] font-semibold text-verified-indigo"
         >
           View all {comments.length} comments
         </button>

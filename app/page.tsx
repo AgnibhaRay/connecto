@@ -20,8 +20,8 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="hero-iridescent flex min-h-screen items-center justify-center">
-        <p className="relative z-10 text-[12px] tracking-[0.2em] text-paper">Loading</p>
+      <div className="flex min-h-screen items-center justify-center bg-paper">
+        <p className="text-[13px] font-semibold text-graphite">Loading</p>
       </div>
     );
   }

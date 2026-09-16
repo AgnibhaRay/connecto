@@ -2,19 +2,18 @@ import Navigation from "@/components/shared/Navigation";
 
 export default function PageShell({
   children,
-  contained = true,
+  title = "Home",
 }: {
   children: React.ReactNode;
   contained?: boolean;
+  title?: string;
 }) {
   return (
     <div className="page-shell">
-      <Navigation />
-      {contained ? (
-        <main className="page-container page-main">{children}</main>
-      ) : (
-        <main className="page-main px-0">{children}</main>
-      )}
+      <Navigation title={title} />
+      <main className="page-main">
+        <div className="feed-column">{children}</div>
+      </main>
     </div>
   );
 }

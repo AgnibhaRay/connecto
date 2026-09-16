@@ -111,7 +111,7 @@ export default function UserSearch() {
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => setIsFocused(true)}
           placeholder="Search users..."
-          className="input-field py-2 pl-10 pr-4 text-[12px]"
+          className="input-field py-2 pl-10 pr-4 text-[15px]"
         />
       </div>
 
@@ -135,9 +135,9 @@ export default function UserSearch() {
                 <div
                   key={user.uid}
                   onClick={() => handleSelect(user)}
-                  className="flex cursor-pointer items-center px-4 py-3 transition-colors duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:bg-obsidian hover:text-paper"
+                  className="flex cursor-pointer items-center px-4 py-3 hover:bg-hover-mist"
                 >
-                  <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden">
+                  <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
                     <Image
                       src={user.photoURL || '/images/default-avatar.png'}
                       alt={user.displayName || ''}
@@ -147,10 +147,10 @@ export default function UserSearch() {
                     />
                   </div>
                   <div className="ml-3">
-                    <p className="text-[14px]">
+                    <p className="text-[13px] font-semibold">
                       {highlightMatch(user.displayName, searchTerm)}
                     </p>
-                    <p className="text-[12px] text-felt-gray">
+                    <p className="text-[12px] font-bold text-graphite">
                       @{highlightMatch(user.username, searchTerm)}
                     </p>
                   </div>

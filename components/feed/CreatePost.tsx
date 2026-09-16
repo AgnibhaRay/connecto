@@ -28,6 +28,13 @@ export default function CreatePost() {
   const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hash === '#compose') {
+      document.getElementById('compose')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  useEffect(() => {
     if (!user) return;
 
     // Subscribe to user document to check suspension status
@@ -181,34 +188,34 @@ export default function CreatePost() {
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit} className="editorial-row hairline-bottom pb-[46px]">
-      <div className="flex gap-3.5">
-        <div className="relative h-10 w-10 shrink-0 overflow-hidden">
+    <form id="compose" onSubmit={handleSubmit} className="post-card">
+      <div className="flex gap-3">
+        <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
           <Image
             src={user.photoURL || '/images/default-avatar.png'}
             alt={user.displayName || ''}
             className="avatar"
             fill
-            sizes="40px"
+            sizes="32px"
           />
         </div>
         <div className="flex-1">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="What's on your mind?"
-            className="textarea-field min-h-[96px]"
+            placeholder="What's new?"
+            className="textarea-field min-h-[72px] border-0 px-0 py-1"
             rows={3}
           />
           {imagePreview && (
-            <div className="relative mt-3.5">
-              <div className="relative h-48 w-full overflow-hidden">
+            <div className="relative mt-3">
+              <div className="media-frame relative h-48 w-full">
                 <Image
                   src={imagePreview}
                   alt="Preview"
                   className="object-cover"
                   fill
-                  sizes="(max-width: 768px) 100vw, 768px"
+                  sizes="(max-width: 768px) 100vw, 600px"
                 />
               </div>
               <button
@@ -217,18 +224,18 @@ export default function CreatePost() {
                   setSelectedImage(null);
                   setImagePreview(null);
                 }}
-                className="absolute right-2 top-2 bg-obsidian px-2 py-1 text-[11px] text-paper"
+                className="btn-login absolute right-2 top-2 px-2 py-1 text-[12px]"
               >
                 ×
               </button>
             </div>
           )}
           {videoPreview && (
-            <div className="relative mt-3.5">
+            <div className="relative mt-3">
               <video
                 src={videoPreview}
                 controls
-                className="h-48 w-full object-cover"
+                className="media-frame h-48 w-full object-cover"
               />
               <button
                 type="button"
@@ -236,7 +243,7 @@ export default function CreatePost() {
                   setSelectedVideo(null);
                   setVideoPreview(null);
                 }}
-                className="absolute right-2 top-2 bg-obsidian px-2 py-1 text-[11px] text-paper"
+                className="btn-login absolute right-2 top-2 px-2 py-1 text-[12px]"
               >
                 ×
               </button>
@@ -244,15 +251,14 @@ export default function CreatePost() {
           )}
         </div>
       </div>
-      <div className="mt-3.5 flex items-center justify-between">
-        <div className="flex gap-6">
+      <div className="mt-3 flex items-center justify-between">
+        <div className="flex gap-4">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="nav-link inline-flex items-center gap-2 text-felt-gray"
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-charcoal hover:text-verified-indigo"
           >
-            <PhotoIcon className="h-5 w-5" />
-            Photo
+            <PhotoIcon className="h-6 w-6" />
           </button>
           <input
             type="file"
@@ -264,10 +270,9 @@ export default function CreatePost() {
           <button
             type="button"
             onClick={() => videoInputRef.current?.click()}
-            className="nav-link inline-flex items-center gap-2 text-felt-gray"
+            className="inline-flex items-center gap-1 text-[13px] font-semibold text-charcoal hover:text-verified-indigo"
           >
-            <VideoCameraIcon className="h-5 w-5" />
-            Video
+            <VideoCameraIcon className="h-6 w-6" />
           </button>
           <input
             type="file"
@@ -280,7 +285,7 @@ export default function CreatePost() {
         <button
           type="submit"
           disabled={!content.trim() || isUploading}
-          className="btn-ghost"
+          className="btn-login"
         >
           {isUploading ? 'Posting...' : 'Post'}
         </button>

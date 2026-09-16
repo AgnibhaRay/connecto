@@ -147,45 +147,44 @@ function ProfileContent() {
 
   if (!user) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">Please sign in to view profiles</p>
+      <PageShell title="Profile">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">Please sign in to view profiles</p>
       </PageShell>
     );
   }
 
   if (!profileUser) {
     return (
-      <PageShell>
-        <p className="text-center text-felt-gray">User not found</p>
+      <PageShell title="Profile">
+        <p className="px-4 py-8 text-center text-[13px] text-graphite">User not found</p>
       </PageShell>
     );
   }
 
   return (
-    <PageShell>
+    <PageShell title="Profile">
       <div>
-        <div className="mb-[46px]">
-          <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-start">
-            <div className="flex flex-col items-start gap-8 sm:flex-row">
+        <div className="border-b border-concrete px-4 py-4">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+            <div className="flex items-start gap-3">
               <Image
                 src={profileUser.photoURL || '/images/default-avatar.png'}
                 alt={profileUser.displayName || 'Profile'}
-                width={96}
-                height={96}
-                className="avatar h-24 w-24"
+                width={80}
+                height={80}
+                className="avatar h-20 w-20"
               />
               <div>
-                <p className="label-micro text-felt-gray">Profile</p>
-                <h1 className="section-whisper mt-3 flex items-center gap-2">
+                <h1 className="flex items-center gap-1 text-[15px] font-semibold text-ink">
                   {profileUser.displayName}
                   {profileUser.isVerified && <VerificationBadge />}
                 </h1>
-                <p className="mt-3 flex items-center gap-2 text-[16px] text-felt-gray">
+                <p className="mt-1 flex items-center gap-2 text-[13px] text-graphite">
                   @{profileUser.username}
                   {profileUser.isAdmin && <span className="tag-pill">Admin</span>}
                 </p>
                 {!isOwnProfile && (
-                  <div className="mt-6 flex gap-3">
+                  <div className="mt-3 flex gap-2">
                     <FollowButton
                       targetUserId={profileUser.uid}
                       initialIsFollowing={isFollowing}
@@ -207,37 +206,33 @@ function ProfileContent() {
             </div>
           </div>
 
-          <div className="mt-10 flex gap-10 hairline-top pt-8">
+          <div className="mt-4 flex gap-6">
             <button onClick={handleShowFollowers} className="text-left">
-              <span className="block text-[29px] font-light text-obsidian">{followerCount}</span>
-              <span className="label-micro text-felt-gray">Followers</span>
+              <span className="text-[13px] font-semibold text-ink">{followerCount}</span>
+              <span className="ml-1 text-[13px] text-graphite">followers</span>
             </button>
             <button onClick={handleShowFollowing} className="text-left">
-              <span className="block text-[29px] font-light text-obsidian">{followingCount}</span>
-              <span className="label-micro text-felt-gray">Following</span>
+              <span className="text-[13px] font-semibold text-ink">{followingCount}</span>
+              <span className="ml-1 text-[13px] text-graphite">following</span>
             </button>
           </div>
 
           {profileUser.bio && (
-            <p className="mt-8 max-w-xl text-[18px] leading-[1.21] text-inkstone">{profileUser.bio}</p>
+            <p className="mt-3 text-[15px] leading-[1.4] text-ink">{profileUser.bio}</p>
           )}
         </div>
 
         <div>
-          <h2 className="mb-[46px] text-[16px] text-obsidian">
-            {isOwnProfile ? 'Your Posts' : `${profileUser.displayName}'s Posts`}
-          </h2>
-
           {loading ? (
-            <p className="text-felt-gray">Loading posts...</p>
+            <p className="px-4 py-8 text-[13px] text-graphite">Loading posts...</p>
           ) : posts.length === 0 ? (
-            <p className="text-felt-gray">
+            <p className="px-4 py-8 text-[13px] text-graphite">
               {isOwnProfile
                 ? "You haven't created any posts yet."
                 : "This user hasn't created any posts yet."}
             </p>
           ) : (
-            <div className="space-y-[46px]">
+            <div>
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
@@ -266,13 +261,13 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <PageShell>
-        <div className="animate-pulse space-y-6">
-          <div className="flex items-center gap-8">
-            <div className="skeleton h-24 w-24"></div>
+      <PageShell title="Profile">
+        <div className="animate-pulse space-y-4 px-4 py-4">
+          <div className="flex items-center gap-3">
+            <div className="skeleton h-20 w-20 rounded-full"></div>
             <div className="space-y-2">
-              <div className="skeleton h-8 w-40"></div>
-              <div className="skeleton h-4 w-24"></div>
+              <div className="skeleton h-4 w-40"></div>
+              <div className="skeleton h-3 w-24"></div>
             </div>
           </div>
         </div>
