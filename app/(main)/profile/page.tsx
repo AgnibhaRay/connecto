@@ -170,16 +170,16 @@ function ProfileContent() {
               <Image
                 src={profileUser.photoURL || '/images/default-avatar.png'}
                 alt={profileUser.displayName || 'Profile'}
-                width={80}
-                height={80}
-                className="avatar h-20 w-20"
+                width={88}
+                height={88}
+                className="avatar h-[88px] w-[88px]"
               />
               <div>
-                <h1 className="flex items-center gap-1 text-[15px] font-semibold text-ink">
+                <h1 className="flex items-center gap-1 text-[20px] font-bold tracking-tight text-ink">
                   {profileUser.displayName}
                   {profileUser.isVerified && <VerificationBadge />}
                 </h1>
-                <p className="mt-1 flex items-center gap-2 text-[13px] text-graphite">
+                <p className="mt-1 flex items-center gap-2 text-[15px] text-graphite">
                   @{profileUser.username}
                   {profileUser.isAdmin && <span className="tag-pill">Admin</span>}
                 </p>
@@ -208,12 +208,12 @@ function ProfileContent() {
 
           <div className="mt-4 flex gap-6">
             <button onClick={handleShowFollowers} className="text-left">
-              <span className="text-[13px] font-semibold text-ink">{followerCount}</span>
-              <span className="ml-1 text-[13px] text-graphite">followers</span>
+              <span className="text-[15px] font-semibold text-ink">{followerCount}</span>
+              <span className="ml-1 text-[15px] text-graphite">followers</span>
             </button>
             <button onClick={handleShowFollowing} className="text-left">
-              <span className="text-[13px] font-semibold text-ink">{followingCount}</span>
-              <span className="ml-1 text-[13px] text-graphite">following</span>
+              <span className="text-[15px] font-semibold text-ink">{followingCount}</span>
+              <span className="ml-1 text-[15px] text-graphite">following</span>
             </button>
           </div>
 

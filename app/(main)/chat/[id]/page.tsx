@@ -142,15 +142,15 @@ export default function ChatRoomPage() {
         <div className="flex items-center space-x-3 border-b border-concrete px-4 py-3">
           <div className="flex-shrink-0 overflow-hidden">
             <Image
-              className="avatar h-8 w-8"
+              className="avatar h-10 w-10"
               src={otherUser?.photoURL || defaultAvatar}
               alt={otherUser?.displayName || 'User'}
-              width={32}
-              height={32}
+              width={40}
+              height={40}
             />
           </div>
           <div className="min-w-0 flex-1">
-            <h2 className="text-[13px] font-semibold text-ink">
+            <h2 className="text-[15px] font-semibold text-ink">
               {otherUser?.displayName || 'Loading...'}
             </h2>
           </div>

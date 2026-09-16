@@ -162,18 +162,18 @@ export default function PostPage({ params }: { params: Promise<{ id: string }> }
   return (
     <PageShell title="Thread">
       <div className="post-card">
-        <div className="mb-3 flex items-center">
-          <div className="relative h-8 w-8 overflow-hidden rounded-full">
+        <div className="mb-3 flex items-start gap-3">
+          <div className="relative h-10 w-10 overflow-hidden rounded-full">
             <Image
               src={post.authorPhotoURL || '/images/default-avatar.png'}
               alt={post.authorName}
               className="avatar"
               fill
-              sizes="32px"
+              sizes="40px"
             />
           </div>
-          <div className="ml-2">
-            <h2 className="flex items-center text-[13px] font-semibold text-ink">
+          <div>
+            <h2 className="flex items-center text-[15px] font-semibold text-ink">
               {post.authorName}
               {authorVerified && <VerificationBadge />}
             </h2>

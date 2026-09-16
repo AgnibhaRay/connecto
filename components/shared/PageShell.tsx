@@ -12,7 +12,10 @@ export default function PageShell({
     <div className="page-shell">
       <Navigation title={title} />
       <main className="page-main">
-        <div className="feed-column">{children}</div>
+        <div className="feed-column">
+          <div className="feed-header">{title}</div>
+          {children}
+        </div>
       </main>
     </div>
   );

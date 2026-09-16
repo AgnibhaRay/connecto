@@ -87,7 +87,7 @@ export default function EventClient({ id }: { id: string }) {
       </div>
 
       <div className="px-4 pb-8">
-        <h1 className="mb-4 text-[15px] font-semibold text-ink">{event.title}</h1>
+        <h1 className="mb-4 text-[24px] font-bold tracking-tight text-ink">{event.title}</h1>
 
         <div className="mb-4 flex flex-col space-y-3 text-[15px] text-charcoal">
           <div className="flex items-center">
@@ -136,7 +136,7 @@ export default function EventClient({ id }: { id: string }) {
               height={40}
               className="avatar h-10 w-10"
             />
-            <span className="ml-3 text-[13px] font-semibold text-ink">{event.organizer.name}</span>
+            <span className="ml-3 text-[15px] font-semibold text-ink">{event.organizer.name}</span>
           </div>
         </div>
 

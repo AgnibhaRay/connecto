@@ -130,97 +130,100 @@ export default function PostCard({ post: initialPost }: PostCardProps) {
 
   return (
     <article className="post-card relative w-full">
-      <div className="flex items-start justify-between gap-3">
-        <Link href={`/profile?username=${authorUsername}`} className="flex min-w-0 flex-1 items-start gap-1">
-          <div className="relative mr-1 h-8 w-8 shrink-0 overflow-hidden rounded-full">
-            <Image
-              src={post.authorPhotoURL || '/images/default-avatar.png'}
-              alt={post.authorName}
-              className="avatar"
-              fill
-              sizes="32px"
-            />
-          </div>
-          <div className="min-w-0 pt-0.5">
-            <div className="flex items-center gap-1 truncate">
-              <h3 className="truncate text-[13px] font-semibold text-ink">{post.authorName}</h3>
-              {isAuthorVerified && <VerificationBadge />}
-              {isAuthorAdmin && <span className="tag-pill">Admin</span>}
-              <span className="text-[13px] font-normal text-graphite">· {formatTimestamp(post.createdAt)}</span>
-            </div>
-            <p className="truncate text-[12px] font-bold text-graphite">@{authorUsername}</p>
-          </div>
+      <div className="flex items-start gap-3">
+        <Link href={`/profile?username=${authorUsername}`} className="relative mt-0.5 h-10 w-10 shrink-0 overflow-hidden rounded-full">
+          <Image
+            src={post.authorPhotoURL || '/images/default-avatar.png'}
+            alt={post.authorName}
+            className="avatar"
+            fill
+            sizes="40px"
+          />
         </Link>
 
-        {user && user.uid === post.authorId && (
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="p-1 text-ink hover:text-verified-indigo"
-            >
-              <EllipsisHorizontalIcon className="h-5 w-5" />
-            </button>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <Link href={`/profile?username=${authorUsername}`} className="min-w-0">
+              <div className="flex min-w-0 items-center gap-1">
+                <h3 className="truncate text-[15px] font-semibold text-ink">{post.authorName}</h3>
+                {isAuthorVerified && <VerificationBadge />}
+                {isAuthorAdmin && <span className="tag-pill">Admin</span>}
+                <span className="shrink-0 text-[13px] font-normal text-graphite">· {formatTimestamp(post.createdAt)}</span>
+              </div>
+              <p className="truncate text-[13px] text-graphite">@{authorUsername}</p>
+            </Link>
 
-            {showDropdown && (
-              <div className="menu-panel absolute right-0 top-full z-10 mt-1 w-32 py-1">
-                <Link
-                  href={`/posts/${post.id}/edit`}
-                  className="block px-4 py-2 text-[13px] font-semibold hover:bg-hover-mist"
-                >
-                  Edit
-                </Link>
+            {user && user.uid === post.authorId && (
+              <div className="relative">
                 <button
-                  onClick={handleDelete}
-                  className="block w-full px-4 py-2 text-left text-[13px] font-semibold hover:bg-hover-mist"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="p-1 text-ink hover:text-verified-indigo"
                 >
-                  Delete
+                  <EllipsisHorizontalIcon className="h-5 w-5" />
                 </button>
+
+                {showDropdown && (
+                  <div className="menu-panel absolute right-0 top-full z-10 mt-1 w-32 py-1">
+                    <Link
+                      href={`/posts/${post.id}/edit`}
+                      className="block px-4 py-2 text-[13px] font-semibold hover:bg-hover-mist"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={handleDelete}
+                      className="block w-full px-4 py-2 text-left text-[13px] font-semibold hover:bg-hover-mist"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
-      </div>
 
-      <Link href={`/posts/${post.id}`} className="mt-3 block space-y-3" onClick={handleDoubleTap} onDoubleClick={handleDoubleTap}>
-        <p className="line-clamp-4 break-words text-[15px] font-normal leading-[21px] text-ink sm:line-clamp-none">
-          {post.content}
-        </p>
+          <Link href={`/posts/${post.id}`} className="mt-1 block space-y-3" onClick={handleDoubleTap} onDoubleClick={handleDoubleTap}>
+            <p className="line-clamp-4 break-words text-[15px] font-normal leading-[21px] text-ink sm:line-clamp-none">
+              {post.content}
+            </p>
 
-        {post.imageURL && !post.videoURL && (
-          <div className="media-frame relative aspect-video w-full bg-hover-mist">
-            <Image
-              src={post.imageURL}
-              alt="Post content"
-              className="object-cover"
-              fill
-              sizes="(max-width: 640px) 100vw, 600px"
-              priority={false}
-              loading="lazy"
-            />
-          </div>
-        )}
-        {post.videoURL && (
-          <div className="media-frame relative aspect-video w-full bg-ink">
-            <video
-              src={post.videoURL}
-              controls
-              className="h-full w-full object-cover"
-              preload="metadata"
-            />
-          </div>
-        )}
-      </Link>
+            {post.imageURL && !post.videoURL && (
+              <div className="media-frame relative aspect-video w-full bg-hover-mist">
+                <Image
+                  src={post.imageURL}
+                  alt="Post content"
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 600px"
+                  priority={false}
+                  loading="lazy"
+                />
+              </div>
+            )}
+            {post.videoURL && (
+              <div className="media-frame relative aspect-video w-full bg-ink">
+                <video
+                  src={post.videoURL}
+                  controls
+                  className="h-full w-full object-cover"
+                  preload="metadata"
+                />
+              </div>
+            )}
+          </Link>
 
-      <div className="mt-1">
-        <PostActions post={post} />
-
-        {post.comments && post.comments.length > 0 && (
           <div className="mt-1">
-            <Comments comments={post.comments} maxDisplay={2} />
-          </div>
-        )}
+            <PostActions post={post} />
 
-        <CommentInput postId={post.id} onCommentAdded={handleCommentAdded} />
+            {post.comments && post.comments.length > 0 && (
+              <div className="mt-1">
+                <Comments comments={post.comments} maxDisplay={2} />
+              </div>
+            )}
+
+            <CommentInput postId={post.id} onCommentAdded={handleCommentAdded} />
+          </div>
+        </div>
       </div>
 
       {showHeartAnimation && (

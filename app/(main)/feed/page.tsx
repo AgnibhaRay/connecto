@@ -18,11 +18,11 @@ function FeedSkeleton() {
     <div>
       <div className="flex gap-3 overflow-hidden border-b border-concrete px-4 py-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="skeleton h-10 w-10 shrink-0 rounded-full" />
+          <div key={i} className="skeleton h-14 w-14 shrink-0 rounded-full" />
         ))}
       </div>
-      <div className="skeleton mx-4 my-4 h-32 rounded-[18px]" />
-      <div className="skeleton mx-4 h-48 rounded-[18px]" />
+      <div className="skeleton mx-4 my-4 h-32" />
+      <div className="skeleton mx-4 h-48" />
     </div>
   );
 }
@@ -78,12 +78,12 @@ export default function FeedPage() {
   return (
     <PageShell title="Home">
       <div className="border-b border-concrete px-4 py-3">
-        <Suspense fallback={<div className="skeleton h-10 w-full rounded-full" />}>
+        <Suspense fallback={<div className="skeleton h-14 w-full rounded-full" />}>
           <StoriesContainer />
         </Suspense>
       </div>
 
-      <Suspense fallback={<div className="skeleton m-4 h-32 rounded-[18px]" />}>
+      <Suspense fallback={<div className="skeleton m-4 h-32" />}>
         <CreatePost />
       </Suspense>
 

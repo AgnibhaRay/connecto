@@ -303,7 +303,7 @@ export default function StoriesContainer() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="skeleton h-10 w-10 flex-shrink-0 rounded-full"
+            className="skeleton h-14 w-14 flex-shrink-0 rounded-full"
           />
         ))}
       </div>
@@ -326,19 +326,19 @@ export default function StoriesContainer() {
               onClick={() => handleStoryClick(authorId)}
               className="relative flex-shrink-0"
             >
-              <div               className={`relative h-10 w-10 overflow-hidden rounded-full ${
-                allStoriesViewed ? 'border border-concrete' : 'border border-ink'
+              <div               className={`relative h-14 w-14 overflow-hidden rounded-full ${
+                allStoriesViewed ? 'border border-concrete' : 'border-2 border-ink'
               }`}>
                 <Image
                   src={authorPhotoURL || '/images/default-avatar.png'}
                   alt={authorName}
                   className="rounded-full object-cover w-full h-full"
                   fill
-                  sizes="40px"
+                  sizes="56px"
                   priority
                 />
               </div>
-              <p className="mt-1 max-w-[40px] truncate text-center text-[12px] font-bold text-graphite">
+              <p className="mt-1 max-w-[56px] truncate text-center text-[12px] font-bold text-graphite">
                 {authorId === user?.uid ? 'Your Story' : authorName}
               </p>
             </button>

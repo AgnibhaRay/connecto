@@ -97,7 +97,7 @@ export default function SignInForm() {
         </a>
       </div>
 
-      <button type="submit" disabled={loading} className="btn-login w-full">
+      <button type="submit" disabled={loading} className="btn-login btn-lg w-full">
         {loading ? 'Signing in...' : 'Sign in'}
       </button>
     </form>

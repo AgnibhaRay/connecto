@@ -129,7 +129,7 @@ export default function ChatPage() {
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-ink">
+                    <p className="text-[15px] font-semibold text-ink">
                       {otherParticipant?.displayName || 'Loading...'}
                     </p>
                     <p className="truncate text-[15px] text-charcoal">

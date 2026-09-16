@@ -190,13 +190,13 @@ export default function CreatePost() {
   return (
     <form id="compose" onSubmit={handleSubmit} className="post-card">
       <div className="flex gap-3">
-        <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
           <Image
             src={user.photoURL || '/images/default-avatar.png'}
             alt={user.displayName || ''}
             className="avatar"
             fill
-            sizes="32px"
+            sizes="40px"
           />
         </div>
         <div className="flex-1">
@@ -204,7 +204,7 @@ export default function CreatePost() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="What's new?"
-            className="textarea-field min-h-[72px] border-0 px-0 py-1"
+            className="textarea-field min-h-[88px] border-0 px-0 py-2 text-[20px] leading-snug"
             rows={3}
           />
           {imagePreview && (

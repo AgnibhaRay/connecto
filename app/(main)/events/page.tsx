@@ -50,7 +50,7 @@ export default function EventsPage() {
   return (
     <PageShell title="Events">
       <div className="flex items-center justify-between border-b border-concrete px-4 py-3">
-        <p className="text-[13px] text-graphite">Upcoming gatherings</p>
+        <p className="text-[15px] text-graphite">Upcoming gatherings</p>
         <Link href="/events/create" className="btn-login">
           Create
         </Link>
